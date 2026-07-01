@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"time"
 
-	"disaster37/goargocdclient/api"
+	"github.com/disaster37/goargocdclient/api"
 
 	"github.com/go-resty/resty/v2"
 )

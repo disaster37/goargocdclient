@@ -1,4 +1,4 @@
-module disaster37/goargocdclient
+module github.com/disaster37/goargocdclient
 
 go 1.26.3
 
