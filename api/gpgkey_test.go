@@ -49,7 +49,7 @@ func TestGPGKeyCreate_Success(t *testing.T) {
 	defer server.Close()
 
 	g := NewGPGKey(client)
-	key, err := g.Create(&GPGKeyModel{KeyData: "new-key-data"})
+	key, err := g.Create(&GPGKeyModel{KeyData: "new-key-data"}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -103,7 +103,7 @@ func TestGPGKeyCreate_Error(t *testing.T) {
 	defer server.Close()
 
 	g := NewGPGKey(client)
-	_, err := g.Create(&GPGKeyModel{KeyData: "new-key-data"})
+	_, err := g.Create(&GPGKeyModel{KeyData: "new-key-data"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -133,7 +133,7 @@ func TestGPGKey_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = g.Create(&GPGKeyModel{KeyData: "new-key-data"})
+	_, err = g.Create(&GPGKeyModel{KeyData: "new-key-data"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}

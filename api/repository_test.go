@@ -15,7 +15,7 @@ func TestRepositoryList_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	list, err := r.List()
+	list, err := r.List(nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func TestRepositoryGet_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	repo, err := r.Get("https://github.com/org/repo")
+	repo, err := r.Get("https://github.com/org/repo", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func TestRepositoryCreate_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	repo, err := r.Create(&RepositoryModel{Repo: "https://github.com/org/new", Name: "new-repo"})
+	repo, err := r.Create(&RepositoryModel{Repo: "https://github.com/org/new", Name: "new-repo"}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +81,7 @@ func TestRepositoryDelete_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	if err := r.Delete("https://github.com/org/repo"); err != nil {
+	if err := r.Delete("https://github.com/org/repo", nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -95,7 +95,7 @@ func TestRepositoryListApps_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	apps, err := r.ListApps("https://github.com/org/repo")
+	apps, err := r.ListApps("https://github.com/org/repo", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -113,7 +113,7 @@ func TestRepositoryGetHelmCharts_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	charts, err := r.GetHelmCharts("https://charts.helm.sh/stable")
+	charts, err := r.GetHelmCharts("https://charts.helm.sh/stable", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -129,7 +129,7 @@ func TestRepositoryListRefs_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	refs, err := r.ListRefs("https://github.com/org/repo")
+	refs, err := r.ListRefs("https://github.com/org/repo", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,7 +157,7 @@ func TestRepositoryListOCITags_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	tags, err := r.ListOCITags("oci://registry.example.com/repo")
+	tags, err := r.ListOCITags("oci://registry.example.com/repo", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -173,7 +173,7 @@ func TestRepositoryGetWrite_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	repo, err := r.GetWrite("https://github.com/org/repo")
+	repo, err := r.GetWrite("https://github.com/org/repo", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -191,7 +191,7 @@ func TestRepositoryCreateWriteRepo_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	repo, err := r.CreateWriteRepository(&RepositoryModel{Repo: "https://github.com/org/write", Name: "write"})
+	repo, err := r.CreateWriteRepository(&RepositoryModel{Repo: "https://github.com/org/write", Name: "write"}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -223,7 +223,7 @@ func TestRepositoryDeleteWriteRepo_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	if err := r.DeleteWriteRepository("https://github.com/org/write"); err != nil {
+	if err := r.DeleteWriteRepository("https://github.com/org/write", nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -247,7 +247,7 @@ func TestRepositoryGet_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.Get("https://unknown")
+	_, err := r.Get("https://unknown", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -280,7 +280,7 @@ func TestRepositoryListWriteRepositories_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	list, err := r.ListWriteRepositories()
+	list, err := r.ListWriteRepositories(nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -296,7 +296,7 @@ func TestRepositoryList_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.List()
+	_, err := r.List(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -309,7 +309,7 @@ func TestRepositoryCreate_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.Create(&RepositoryModel{Repo: "https://github.com/org/new", Name: "new-repo"})
+	_, err := r.Create(&RepositoryModel{Repo: "https://github.com/org/new", Name: "new-repo"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -335,7 +335,7 @@ func TestRepositoryDelete_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	err := r.Delete("https://github.com/org/repo")
+	err := r.Delete("https://github.com/org/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -348,7 +348,7 @@ func TestRepositoryListApps_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.ListApps("https://github.com/org/repo")
+	_, err := r.ListApps("https://github.com/org/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -376,7 +376,7 @@ func TestRepositoryGetHelmCharts_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.GetHelmCharts("https://charts.helm.sh/stable")
+	_, err := r.GetHelmCharts("https://charts.helm.sh/stable", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -389,7 +389,7 @@ func TestRepositoryListRefs_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.ListRefs("https://github.com/org/repo")
+	_, err := r.ListRefs("https://github.com/org/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -402,7 +402,7 @@ func TestRepositoryListOCITags_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.ListOCITags("oci://registry.example.com/repo")
+	_, err := r.ListOCITags("oci://registry.example.com/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -428,7 +428,7 @@ func TestRepositoryListWriteRepositories_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.ListWriteRepositories()
+	_, err := r.ListWriteRepositories(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -441,7 +441,7 @@ func TestRepositoryGetWrite_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.GetWrite("https://github.com/org/repo")
+	_, err := r.GetWrite("https://github.com/org/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -454,7 +454,7 @@ func TestRepositoryCreateWriteRepository_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	_, err := r.CreateWriteRepository(&RepositoryModel{Repo: "https://github.com/org/write", Name: "write"})
+	_, err := r.CreateWriteRepository(&RepositoryModel{Repo: "https://github.com/org/write", Name: "write"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -480,7 +480,7 @@ func TestRepositoryDeleteWriteRepository_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepository(client)
-	err := r.DeleteWriteRepository("https://github.com/org/write")
+	err := r.DeleteWriteRepository("https://github.com/org/write", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -502,15 +502,15 @@ func TestRepositoryValidateWriteAccess_Error(t *testing.T) {
 func TestRepository_NetworkError(t *testing.T) {
 	client := newFailingClient()
 	r := NewRepository(client)
-	_, err := r.List()
+	_, err := r.List(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.Get("https://github.com/org/repo")
+	_, err = r.Get("https://github.com/org/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.Create(&RepositoryModel{Repo: "https://github.com/org/new", Name: "new-repo"})
+	_, err = r.Create(&RepositoryModel{Repo: "https://github.com/org/new", Name: "new-repo"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -518,10 +518,10 @@ func TestRepository_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	if err = r.Delete("https://github.com/org/repo"); err == nil {
+	if err = r.Delete("https://github.com/org/repo", nil); err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.ListApps("https://github.com/org/repo")
+	_, err = r.ListApps("https://github.com/org/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -529,30 +529,30 @@ func TestRepository_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.GetHelmCharts("https://charts.helm.sh/stable")
+	_, err = r.GetHelmCharts("https://charts.helm.sh/stable", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.ListRefs("https://github.com/org/repo")
+	_, err = r.ListRefs("https://github.com/org/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.ListOCITags("oci://registry.example.com/repo")
+	_, err = r.ListOCITags("oci://registry.example.com/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
 	if err = r.ValidateAccess(&RepoAccessQuery{Repo: "https://github.com/org/repo"}); err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.ListWriteRepositories()
+	_, err = r.ListWriteRepositories(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.GetWrite("https://github.com/org/repo")
+	_, err = r.GetWrite("https://github.com/org/repo", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.CreateWriteRepository(&RepositoryModel{Repo: "https://github.com/org/write", Name: "write"})
+	_, err = r.CreateWriteRepository(&RepositoryModel{Repo: "https://github.com/org/write", Name: "write"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -560,7 +560,7 @@ func TestRepository_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	if err = r.DeleteWriteRepository("https://github.com/org/write"); err == nil {
+	if err = r.DeleteWriteRepository("https://github.com/org/write", nil); err == nil {
 		t.Error("expected error")
 	}
 	if err = r.ValidateWriteAccess(&RepoAccessQuery{Repo: "https://github.com/org/repo"}); err == nil {

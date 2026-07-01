@@ -49,7 +49,7 @@ func TestProjectCreate_Success(t *testing.T) {
 	defer server.Close()
 
 	p := NewProject(client)
-	proj, err := p.Create(&ProjectModel{ObjectMeta: ObjectMeta{Name: "newproj"}})
+	proj, err := p.Create(&ProjectModel{ObjectMeta: ObjectMeta{Name: "newproj"}}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,7 +127,7 @@ func TestProjectDeleteToken_Success(t *testing.T) {
 	defer server.Close()
 
 	p := NewProject(client)
-	if err := p.DeleteToken("default", "read-only", 12345); err != nil {
+	if err := p.DeleteToken("default", "read-only", 12345, ""); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -231,7 +231,7 @@ func TestProjectCreate_Error(t *testing.T) {
 	defer server.Close()
 
 	p := NewProject(client)
-	_, err := p.Create(&ProjectModel{ObjectMeta: ObjectMeta{Name: "newproj"}})
+	_, err := p.Create(&ProjectModel{ObjectMeta: ObjectMeta{Name: "newproj"}}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -309,7 +309,7 @@ func TestProjectDeleteToken_Error(t *testing.T) {
 	defer server.Close()
 
 	p := NewProject(client)
-	err := p.DeleteToken("default", "read-only", 12345)
+	err := p.DeleteToken("default", "read-only", 12345, "")
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -365,7 +365,7 @@ func TestProject_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = p.Create(&ProjectModel{ObjectMeta: ObjectMeta{Name: "newproj"}})
+	_, err = p.Create(&ProjectModel{ObjectMeta: ObjectMeta{Name: "newproj"}}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -388,7 +388,7 @@ func TestProject_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	if err = p.DeleteToken("default", "read-only", 12345); err == nil {
+	if err = p.DeleteToken("default", "read-only", 12345, ""); err == nil {
 		t.Error("expected error")
 	}
 	_, err = p.ListEvents("default")

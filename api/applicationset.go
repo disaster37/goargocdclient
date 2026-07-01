@@ -4,19 +4,20 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/url"
 
 	"github.com/go-resty/resty/v2"
 )
 
 type ApplicationSet interface {
-	List() ([]*ApplicationSetModel, error)
-	Get(name string) (*ApplicationSetModel, error)
-	Create(appSet *ApplicationSetModel) (*ApplicationSetModel, error)
-	Delete(name string) error
+	List(opts *ApplicationSetListOptions) ([]*ApplicationSetModel, error)
+	Get(name string, opts *ApplicationSetGetOptions) (*ApplicationSetModel, error)
+	Create(appSet *ApplicationSetModel, opts *ApplicationSetCreateOptions) (*ApplicationSetModel, error)
+	Delete(name string, opts *ApplicationSetDeleteOptions) error
 	Generate(appSet *ApplicationSetModel) ([]*ApplicationSetModel, error)
-	ResourceTree(name string) (*ApplicationTree, error)
-	ListResourceEvents(name string) (*ResourceEventList, error)
-	Watch(ctx context.Context) (<-chan *ApplicationSetWatchEvent, error)
+	ResourceTree(name string, opts *ApplicationSetTreeOptions) (*ApplicationTree, error)
+	ListResourceEvents(name string, opts *ApplicationSetGetOptions) (*ResourceEventList, error)
+	Watch(ctx context.Context, opts *ApplicationSetWatchOptions) (<-chan *ApplicationSetWatchEvent, error)
 }
 
 type ApplicationSetModel struct {
@@ -27,13 +28,13 @@ type ApplicationSetModel struct {
 }
 
 type ApplicationSetSpec struct {
-	Generators   []ApplicationSetGenerator `json:"generators"`
-	Template     ApplicationSetTemplate    `json:"template"`
-	SyncPolicy   *ApplicationSetSyncPolicy `json:"syncPolicy,omitempty"`
-	Strategy     *ApplicationSetStrategy   `json:"strategy,omitempty"`
-	PreservedFields  []string               `json:"preservedFields,omitempty"`
-	GoTemplate       *bool                 `json:"goTemplate,omitempty"`
-	GoTemplateOptions []string             `json:"goTemplateOptions,omitempty"`
+	Generators        []ApplicationSetGenerator `json:"generators"`
+	Template          ApplicationSetTemplate    `json:"template"`
+	SyncPolicy        *ApplicationSetSyncPolicy `json:"syncPolicy,omitempty"`
+	Strategy          *ApplicationSetStrategy   `json:"strategy,omitempty"`
+	PreservedFields   []string                  `json:"preservedFields,omitempty"`
+	GoTemplate        *bool                     `json:"goTemplate,omitempty"`
+	GoTemplateOptions []string                  `json:"goTemplateOptions,omitempty"`
 }
 
 type ApplicationSetGenerator struct {
@@ -50,15 +51,15 @@ type ApplicationSetGenerator struct {
 }
 
 type ListGenerator struct {
-	Elements    []map[string]string `json:"elements"`
-	ElementsYAML string             `json:"elementsYaml,omitempty"`
+	Elements    []map[string]string   `json:"elements"`
+	ElementsYAML string               `json:"elementsYaml,omitempty"`
 	Template    ApplicationSetTemplate `json:"template,omitempty"`
 }
 
 type ClusterGenerator struct {
-	Selector Selector              `json:"selector,omitempty"`
-	Values   map[string]string     `json:"values,omitempty"`
-	Template ApplicationSetTemplate `json:"template,omitempty"`
+	Selector Selector                `json:"selector,omitempty"`
+	Values   map[string]string       `json:"values,omitempty"`
+	Template ApplicationSetTemplate  `json:"template,omitempty"`
 }
 
 type GitGenerator struct {
@@ -274,9 +275,9 @@ type ApplicationSetSyncPolicy struct {
 }
 
 type ApplicationSetStrategy struct {
-	Type       string                              `json:"type,omitempty"`
-	RollingSync *ApplicationSetRolloutStep         `json:"rollingSync,omitempty"`
-	RollingUpdate *ApplicationSetRolloutStep       `json:"rollingUpdate,omitempty"`
+	Type          string                        `json:"type,omitempty"`
+	RollingSync   *ApplicationSetRolloutStep    `json:"rollingSync,omitempty"`
+	RollingUpdate *ApplicationSetRolloutStep    `json:"rollingUpdate,omitempty"`
 }
 
 type ApplicationSetRolloutStep struct {
@@ -290,9 +291,9 @@ type IntOrString struct {
 }
 
 type ApplicationSetStatus struct {
-	Conditions       []ApplicationSetCondition `json:"conditions,omitempty"`
-	Resources        []ResourceStatus          `json:"resources,omitempty"`
-	ApplicationStatus []ApplicationStatus      `json:"applicationStatus,omitempty"`
+	Conditions        []ApplicationSetCondition `json:"conditions,omitempty"`
+	Resources         []ResourceStatus          `json:"resources,omitempty"`
+	ApplicationStatus []ApplicationStatus       `json:"applicationStatus,omitempty"`
 }
 
 type ApplicationSetCondition struct {
@@ -304,10 +305,41 @@ type ApplicationSetCondition struct {
 }
 
 type ApplicationSetWatchEvent struct {
-	Type           SyncStatusCode        `json:"type"`
-	ApplicationSet *ApplicationSetModel  `json:"applicationSet"`
-	Application    *ApplicationModel     `json:"application,omitempty"`
-	Apps           []*ApplicationModel   `json:"apps,omitempty"`
+	Type           SyncStatusCode       `json:"type"`
+	ApplicationSet *ApplicationSetModel `json:"applicationSet"`
+	Application    *ApplicationModel    `json:"application,omitempty"`
+	Apps           []*ApplicationModel  `json:"apps,omitempty"`
+}
+
+type ApplicationSetListOptions struct {
+	Projects        []string `json:"projects,omitempty"`
+	Selector        string   `json:"selector,omitempty"`
+	AppsetNamespace string   `json:"appsetNamespace,omitempty"`
+}
+
+type ApplicationSetGetOptions struct {
+	AppsetNamespace string `json:"appsetNamespace,omitempty"`
+}
+
+type ApplicationSetCreateOptions struct {
+	Upsert bool `json:"upsert,omitempty"`
+	DryRun bool `json:"dryRun,omitempty"`
+}
+
+type ApplicationSetDeleteOptions struct {
+	AppsetNamespace string `json:"appsetNamespace,omitempty"`
+}
+
+type ApplicationSetTreeOptions struct {
+	AppsetNamespace string `json:"appsetNamespace,omitempty"`
+}
+
+type ApplicationSetWatchOptions struct {
+	Name            string   `json:"name,omitempty"`
+	Projects        []string `json:"projects,omitempty"`
+	Selector        string   `json:"selector,omitempty"`
+	AppSetNamespace string   `json:"appSetNamespace,omitempty"`
+	ResourceVersion string   `json:"resourceVersion,omitempty"`
 }
 
 type ApplicationSetStandard struct {
@@ -318,13 +350,23 @@ func NewApplicationSet(client *resty.Client) ApplicationSet {
 	return &ApplicationSetStandard{client: client}
 }
 
-func (a *ApplicationSetStandard) List() ([]*ApplicationSetModel, error) {
+func (a *ApplicationSetStandard) List(opts *ApplicationSetListOptions) ([]*ApplicationSetModel, error) {
 	var result struct {
 		Items []*ApplicationSetModel `json:"items"`
 	}
-	resp, err := a.client.R().
-		SetResult(&result).
-		Get("/api/v1/applicationsets")
+	req := a.client.R().SetResult(&result)
+	if opts != nil {
+		if opts.AppsetNamespace != "" {
+			req.SetQueryParam("appsetNamespace", opts.AppsetNamespace)
+		}
+		if opts.Selector != "" {
+			req.SetQueryParam("selector", opts.Selector)
+		}
+		for _, p := range opts.Projects {
+			req.SetQueryParam("projects", p)
+		}
+	}
+	resp, err := req.Get("/api/v1/applicationsets")
 	if err != nil {
 		return nil, err
 	}
@@ -334,11 +376,13 @@ func (a *ApplicationSetStandard) List() ([]*ApplicationSetModel, error) {
 	return result.Items, nil
 }
 
-func (a *ApplicationSetStandard) Get(name string) (*ApplicationSetModel, error) {
+func (a *ApplicationSetStandard) Get(name string, opts *ApplicationSetGetOptions) (*ApplicationSetModel, error) {
 	var result ApplicationSetModel
-	resp, err := a.client.R().
-		SetResult(&result).
-		Get(fmt.Sprintf("/api/v1/applicationsets/%s", name))
+	req := a.client.R().SetResult(&result)
+	if opts != nil && opts.AppsetNamespace != "" {
+		req.SetQueryParam("appsetNamespace", opts.AppsetNamespace)
+	}
+	resp, err := req.Get(fmt.Sprintf("/api/v1/applicationsets/%s", url.PathEscape(name)))
 	if err != nil {
 		return nil, err
 	}
@@ -348,12 +392,14 @@ func (a *ApplicationSetStandard) Get(name string) (*ApplicationSetModel, error) 
 	return &result, nil
 }
 
-func (a *ApplicationSetStandard) Create(appSet *ApplicationSetModel) (*ApplicationSetModel, error) {
+func (a *ApplicationSetStandard) Create(appSet *ApplicationSetModel, opts *ApplicationSetCreateOptions) (*ApplicationSetModel, error) {
 	var result ApplicationSetModel
-	resp, err := a.client.R().
-		SetBody(appSet).
-		SetResult(&result).
-		Post("/api/v1/applicationsets")
+	req := a.client.R().SetBody(appSet).SetResult(&result)
+	if opts != nil {
+		req.SetQueryParam("upsert", fmt.Sprintf("%t", opts.Upsert))
+		req.SetQueryParam("dryRun", fmt.Sprintf("%t", opts.DryRun))
+	}
+	resp, err := req.Post("/api/v1/applicationsets")
 	if err != nil {
 		return nil, err
 	}
@@ -363,9 +409,12 @@ func (a *ApplicationSetStandard) Create(appSet *ApplicationSetModel) (*Applicati
 	return &result, nil
 }
 
-func (a *ApplicationSetStandard) Delete(name string) error {
-	resp, err := a.client.R().
-		Delete(fmt.Sprintf("/api/v1/applicationsets/%s", name))
+func (a *ApplicationSetStandard) Delete(name string, opts *ApplicationSetDeleteOptions) error {
+	req := a.client.R()
+	if opts != nil && opts.AppsetNamespace != "" {
+		req.SetQueryParam("appsetNamespace", opts.AppsetNamespace)
+	}
+	resp, err := req.Delete(fmt.Sprintf("/api/v1/applicationsets/%s", url.PathEscape(name)))
 	if err != nil {
 		return err
 	}
@@ -392,11 +441,13 @@ func (a *ApplicationSetStandard) Generate(appSet *ApplicationSetModel) ([]*Appli
 	return result.Items, nil
 }
 
-func (a *ApplicationSetStandard) ResourceTree(name string) (*ApplicationTree, error) {
+func (a *ApplicationSetStandard) ResourceTree(name string, opts *ApplicationSetTreeOptions) (*ApplicationTree, error) {
 	var result ApplicationTree
-	resp, err := a.client.R().
-		SetResult(&result).
-		Get(fmt.Sprintf("/api/v1/applicationsets/%s/resource-tree", name))
+	req := a.client.R().SetResult(&result)
+	if opts != nil && opts.AppsetNamespace != "" {
+		req.SetQueryParam("appsetNamespace", opts.AppsetNamespace)
+	}
+	resp, err := req.Get(fmt.Sprintf("/api/v1/applicationsets/%s/resource-tree", url.PathEscape(name)))
 	if err != nil {
 		return nil, err
 	}
@@ -406,11 +457,13 @@ func (a *ApplicationSetStandard) ResourceTree(name string) (*ApplicationTree, er
 	return &result, nil
 }
 
-func (a *ApplicationSetStandard) ListResourceEvents(name string) (*ResourceEventList, error) {
+func (a *ApplicationSetStandard) ListResourceEvents(name string, opts *ApplicationSetGetOptions) (*ResourceEventList, error) {
 	var result ResourceEventList
-	resp, err := a.client.R().
-		SetResult(&result).
-		Get(fmt.Sprintf("/api/v1/applicationsets/%s/events", name))
+	req := a.client.R().SetResult(&result)
+	if opts != nil && opts.AppsetNamespace != "" {
+		req.SetQueryParam("appsetNamespace", opts.AppsetNamespace)
+	}
+	resp, err := req.Get(fmt.Sprintf("/api/v1/applicationsets/%s/events", url.PathEscape(name)))
 	if err != nil {
 		return nil, err
 	}
@@ -420,12 +473,29 @@ func (a *ApplicationSetStandard) ListResourceEvents(name string) (*ResourceEvent
 	return &result, nil
 }
 
-func (a *ApplicationSetStandard) Watch(ctx context.Context) (<-chan *ApplicationSetWatchEvent, error) {
+func (a *ApplicationSetStandard) Watch(ctx context.Context, opts *ApplicationSetWatchOptions) (<-chan *ApplicationSetWatchEvent, error) {
 	ch := make(chan *ApplicationSetWatchEvent)
-	resp, err := a.client.R().
+	req := a.client.R().
 		SetDoNotParseResponse(true).
-		SetHeader("Accept", "text/event-stream").
-		Get("/api/v1/stream/applicationsets")
+		SetHeader("Accept", "text/event-stream")
+	if opts != nil {
+		if opts.Name != "" {
+			req.SetQueryParam("name", opts.Name)
+		}
+		if opts.Selector != "" {
+			req.SetQueryParam("selector", opts.Selector)
+		}
+		if opts.AppSetNamespace != "" {
+			req.SetQueryParam("appSetNamespace", opts.AppSetNamespace)
+		}
+		if opts.ResourceVersion != "" {
+			req.SetQueryParam("resourceVersion", opts.ResourceVersion)
+		}
+		for _, p := range opts.Projects {
+			req.SetQueryParam("projects", p)
+		}
+	}
+	resp, err := req.Get("/api/v1/stream/applicationsets")
 	if err != nil {
 		return nil, err
 	}

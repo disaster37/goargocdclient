@@ -20,7 +20,7 @@ func TestApplicationList_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	list, err := a.List()
+	list, err := a.List(nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +36,7 @@ func TestApplicationGet_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	app, err := a.Get("myapp")
+	app, err := a.Get("myapp", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func TestApplicationCreate_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	app, err := a.Create(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "newapp"}})
+	app, err := a.Create(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "newapp"}}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func TestApplicationUpdate_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	app, err := a.Update(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "myapp"}})
+	app, err := a.Update(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "myapp"}}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -122,7 +122,7 @@ func TestApplicationTerminateOperation_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	if err := a.TerminateOperation("myapp"); err != nil {
+	if err := a.TerminateOperation("myapp", nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -134,7 +134,7 @@ func TestApplicationPatch_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	app, err := a.Patch("myapp", map[string]string{"key": "value"}, "application/merge-patch+json")
+	app, err := a.Patch("myapp", map[string]string{"key": "value"}, "application/merge-patch+json", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -150,7 +150,7 @@ func TestApplicationResourceTree_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	tree, err := a.ResourceTree("myapp")
+	tree, err := a.ResourceTree("myapp", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -166,7 +166,7 @@ func TestApplicationManagedResources_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	resp, err := a.ManagedResources("myapp")
+	resp, err := a.ManagedResources("myapp", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -198,7 +198,7 @@ func TestApplicationRevisionMetadata_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	meta, err := a.RevisionMetadata("myapp", "abc123")
+	meta, err := a.RevisionMetadata("myapp", "abc123", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -214,7 +214,7 @@ func TestApplicationGet_SyncWindows(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	windows, err := a.GetSyncWindows("myapp")
+	windows, err := a.GetSyncWindows("myapp", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -246,7 +246,7 @@ func TestApplicationListLinks_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	links, err := a.ListLinks("myapp")
+	links, err := a.ListLinks("myapp", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -299,7 +299,7 @@ func TestApplicationGet_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.Get("nonexistent")
+	_, err := a.Get("nonexistent", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -312,7 +312,7 @@ func TestApplicationList_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.List()
+	_, err := a.List(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -325,7 +325,7 @@ func TestApplicationCreate_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.Create(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "newapp"}})
+	_, err := a.Create(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "newapp"}}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -338,7 +338,7 @@ func TestApplicationUpdate_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.Update(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "myapp"}})
+	_, err := a.Update(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "myapp"}}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -390,7 +390,7 @@ func TestApplicationTerminateOperation_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	err := a.TerminateOperation("myapp")
+	err := a.TerminateOperation("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -403,7 +403,7 @@ func TestApplicationPatch_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.Patch("myapp", map[string]string{"key": "value"}, "application/json")
+	_, err := a.Patch("myapp", map[string]string{"key": "value"}, "application/json", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -416,7 +416,7 @@ func TestApplicationResourceTree_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.ResourceTree("myapp")
+	_, err := a.ResourceTree("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -429,7 +429,7 @@ func TestApplicationManagedResources_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.ManagedResources("myapp")
+	_, err := a.ManagedResources("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -455,7 +455,7 @@ func TestApplicationRevisionMetadata_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.RevisionMetadata("myapp", "abc123")
+	_, err := a.RevisionMetadata("myapp", "abc123", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -468,7 +468,7 @@ func TestApplicationGetSyncWindows_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.GetSyncWindows("myapp")
+	_, err := a.GetSyncWindows("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -494,7 +494,7 @@ func TestApplicationListLinks_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	_, err := a.ListLinks("myapp")
+	_, err := a.ListLinks("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -534,19 +534,19 @@ func TestApplicationListResourceActions_Error(t *testing.T) {
 func TestApplication_NetworkError(t *testing.T) {
 	client := newFailingClient()
 	a := NewApplication(client)
-	_, err := a.List()
+	_, err := a.List(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.Get("myapp")
+	_, err = a.Get("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.Create(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "newapp"}})
+	_, err = a.Create(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "newapp"}}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.Update(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "myapp"}})
+	_, err = a.Update(&ApplicationModel{ObjectMeta: ObjectMeta{Name: "myapp"}}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -562,11 +562,11 @@ func TestApplication_NetworkError(t *testing.T) {
 	if e == nil {
 		t.Error("expected error")
 	}
-	e = a.TerminateOperation("myapp")
+	e = a.TerminateOperation("myapp", nil)
 	if e == nil {
 		t.Error("expected error")
 	}
-	_, err = a.Patch("myapp", map[string]string{"key": "value"}, "application/json")
+	_, err = a.Patch("myapp", map[string]string{"key": "value"}, "application/json", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -602,19 +602,19 @@ func TestApplication_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.ResourceTree("myapp")
+	_, err = a.ResourceTree("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.ManagedResources("myapp")
+	_, err = a.ManagedResources("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.RevisionMetadata("myapp", "abc123")
+	_, err = a.RevisionMetadata("myapp", "abc123", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.GetSyncWindows("myapp")
+	_, err = a.GetSyncWindows("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -622,7 +622,7 @@ func TestApplication_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.ListLinks("myapp")
+	_, err = a.ListLinks("myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -636,7 +636,7 @@ func TestApplication_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.WatchResourceTree(ctx, "myapp")
+	_, err = a.WatchResourceTree(ctx, "myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -871,7 +871,7 @@ func TestApplicationPatch_EmptyPatchType(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplication(client)
-	app, err := a.Patch("myapp", map[string]string{"key": "value"}, "")
+	app, err := a.Patch("myapp", map[string]string{"key": "value"}, "", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1022,7 +1022,7 @@ func TestApplicationWatchResourceTree_Success(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	a := NewApplication(client)
-	ch, err := a.WatchResourceTree(ctx, "myapp")
+	ch, err := a.WatchResourceTree(ctx, "myapp", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1051,7 +1051,7 @@ func TestApplicationWatchResourceTree_SSEError(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	a := NewApplication(client)
-	_, err := a.WatchResourceTree(ctx, "myapp")
+	_, err := a.WatchResourceTree(ctx, "myapp", nil)
 	if err == nil {
 		t.Error("expected error")
 	}

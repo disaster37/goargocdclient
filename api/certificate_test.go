@@ -49,9 +49,9 @@ func TestCertificateCreate_Success(t *testing.T) {
 	defer server.Close()
 
 	c := NewCertificate(client)
-	list, err := c.Create(&CertificateCreateRequest{
+	list, err := 	c.Create(&CertificateCreateRequest{
 		HTTPS: &CertificateModel{ServerName: "new.com", CertType: "https", CertData: "data", CertInfo: "info"},
-	})
+	}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -106,9 +106,9 @@ func TestCertificateCreate_Error(t *testing.T) {
 	defer server.Close()
 
 	c := NewCertificate(client)
-	_, err := c.Create(&CertificateCreateRequest{
+	_, err := 	c.Create(&CertificateCreateRequest{
 		HTTPS: &CertificateModel{ServerName: "new.com", CertType: "https", CertData: "data", CertInfo: "info"},
-	})
+	}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -147,9 +147,9 @@ func TestCertificate_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = c.Create(&CertificateCreateRequest{
+	_, err = 	c.Create(&CertificateCreateRequest{
 		HTTPS: &CertificateModel{ServerName: "new.com", CertType: "https", CertData: "data", CertInfo: "info"},
-	})
+	}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}

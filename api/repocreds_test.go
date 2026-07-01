@@ -33,7 +33,7 @@ func TestRepoCredsCreate_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepoCreds(client)
-	creds, err := r.Create(&RepoCredsModel{URL: "https://github.com", Username: "user"})
+	creds, err := r.Create(&RepoCredsModel{URL: "https://github.com", Username: "user"}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,7 +95,7 @@ func TestRepoCredsCreateWrite_Success(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepoCreds(client)
-	creds, err := r.CreateWrite(&RepoCredsModel{URL: "https://write.github.com", Username: "writer"})
+	creds, err := r.CreateWrite(&RepoCredsModel{URL: "https://write.github.com", Username: "writer"}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -152,7 +152,7 @@ func TestRepoCredsCreate_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepoCreds(client)
-	_, err := r.Create(&RepoCredsModel{URL: "https://github.com", Username: "user"})
+	_, err := r.Create(&RepoCredsModel{URL: "https://github.com", Username: "user"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -204,7 +204,7 @@ func TestRepoCredsCreateWrite_Error(t *testing.T) {
 	defer server.Close()
 
 	r := NewRepoCreds(client)
-	_, err := r.CreateWrite(&RepoCredsModel{URL: "https://write.github.com", Username: "writer"})
+	_, err := r.CreateWrite(&RepoCredsModel{URL: "https://write.github.com", Username: "writer"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -243,7 +243,7 @@ func TestRepoCreds_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.Create(&RepoCredsModel{URL: "https://github.com", Username: "user"})
+	_, err = r.Create(&RepoCredsModel{URL: "https://github.com", Username: "user"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -258,7 +258,7 @@ func TestRepoCreds_NetworkError(t *testing.T) {
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = r.CreateWrite(&RepoCredsModel{URL: "https://write.github.com", Username: "writer"})
+	_, err = r.CreateWrite(&RepoCredsModel{URL: "https://write.github.com", Username: "writer"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}

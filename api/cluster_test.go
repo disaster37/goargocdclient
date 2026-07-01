@@ -15,7 +15,7 @@ func TestClusterList_Success(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	list, err := c.List()
+	list, err := c.List(nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func TestClusterGet_Success(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	cluster, err := c.Get("https://kubernetes.default.svc")
+	cluster, err := c.Get("https://kubernetes.default.svc", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func TestClusterCreate_Success(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	cluster, err := c.Create(&ClusterModel{Name: "new-cluster", Server: "https://1.2.3.4"})
+	cluster, err := c.Create(&ClusterModel{Name: "new-cluster", Server: "https://1.2.3.4"}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func TestClusterUpdate_Success(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	cluster, err := c.Update(&ClusterModel{Name: "updated", Server: "https://1.2.3.4"})
+	cluster, err := c.Update(&ClusterModel{Name: "updated", Server: "https://1.2.3.4"}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +81,7 @@ func TestClusterDelete_Success(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	if err := c.Delete("https://kubernetes.default.svc"); err != nil {
+	if err := c.Delete("https://kubernetes.default.svc", nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -93,7 +93,7 @@ func TestClusterRotateAuth_Success(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	if err := c.RotateAuth("https://kubernetes.default.svc"); err != nil {
+	if err := c.RotateAuth("https://kubernetes.default.svc", nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -105,7 +105,7 @@ func TestClusterInvalidateCache_Success(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	if err := c.InvalidateCache("https://kubernetes.default.svc"); err != nil {
+	if err := c.InvalidateCache("https://kubernetes.default.svc", nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -117,7 +117,7 @@ func TestClusterGet_Error(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	_, err := c.Get("https://unknown")
+	_, err := c.Get("https://unknown", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -130,7 +130,7 @@ func TestClusterList_Error(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	_, err := c.List()
+	_, err := c.List(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -143,7 +143,7 @@ func TestClusterCreate_Error(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	_, err := c.Create(&ClusterModel{Name: "new-cluster", Server: "https://1.2.3.4"})
+	_, err := c.Create(&ClusterModel{Name: "new-cluster", Server: "https://1.2.3.4"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -156,7 +156,7 @@ func TestClusterUpdate_Error(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	_, err := c.Update(&ClusterModel{Name: "updated", Server: "https://1.2.3.4"})
+	_, err := c.Update(&ClusterModel{Name: "updated", Server: "https://1.2.3.4"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -169,7 +169,7 @@ func TestClusterDelete_Error(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	err := c.Delete("https://kubernetes.default.svc")
+	err := c.Delete("https://kubernetes.default.svc", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -182,7 +182,7 @@ func TestClusterRotateAuth_Error(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	err := c.RotateAuth("https://kubernetes.default.svc")
+	err := c.RotateAuth("https://kubernetes.default.svc", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -195,7 +195,7 @@ func TestClusterInvalidateCache_Error(t *testing.T) {
 	defer server.Close()
 
 	c := NewCluster(client)
-	err := c.InvalidateCache("https://kubernetes.default.svc")
+	err := c.InvalidateCache("https://kubernetes.default.svc", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -204,29 +204,29 @@ func TestClusterInvalidateCache_Error(t *testing.T) {
 func TestCluster_NetworkError(t *testing.T) {
 	client := newFailingClient()
 	c := NewCluster(client)
-	_, err := c.List()
+	_, err := c.List(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = c.Get("https://kubernetes.default.svc")
+	_, err = c.Get("https://kubernetes.default.svc", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = c.Create(&ClusterModel{Name: "new-cluster", Server: "https://1.2.3.4"})
+	_, err = c.Create(&ClusterModel{Name: "new-cluster", Server: "https://1.2.3.4"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = c.Update(&ClusterModel{Name: "updated", Server: "https://1.2.3.4"})
+	_, err = c.Update(&ClusterModel{Name: "updated", Server: "https://1.2.3.4"}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	if err = c.Delete("https://kubernetes.default.svc"); err == nil {
+	if err = c.Delete("https://kubernetes.default.svc", nil); err == nil {
 		t.Error("expected error")
 	}
-	if err = c.RotateAuth("https://kubernetes.default.svc"); err == nil {
+	if err = c.RotateAuth("https://kubernetes.default.svc", nil); err == nil {
 		t.Error("expected error")
 	}
-	if err = c.InvalidateCache("https://kubernetes.default.svc"); err == nil {
+	if err = c.InvalidateCache("https://kubernetes.default.svc", nil); err == nil {
 		t.Error("expected error")
 	}
 }

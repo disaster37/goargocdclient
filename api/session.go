@@ -1,11 +1,13 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/go-resty/resty/v2"
 )
 
 type Session interface {
-	Create(username, password string) (*SessionResponse, error)
+	Create(opts *SessionCreateOptions) (*SessionResponse, error)
 	Delete() error
 	GetUserInfo() (*UserInfo, error)
 }
@@ -15,10 +17,29 @@ type SessionResponse struct {
 }
 
 type UserInfo struct {
-	LoggedIn bool   `json:"loggedIn"`
-	Username string `json:"username,omitempty"`
-	Issuer   string `json:"iss,omitempty"`
+	LoggedIn bool     `json:"loggedIn"`
+	Username string   `json:"username,omitempty"`
+	Issuer   string   `json:"iss,omitempty"`
 	Groups   []string `json:"groups,omitempty"`
+}
+
+type SessionCreateOptions struct {
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
+	Token    string `json:"token,omitempty"`
+}
+
+func (o *SessionCreateOptions) Validate() error {
+	if o == nil {
+		return fmt.Errorf("opts must not be nil")
+	}
+	if o.Token != "" {
+		return nil
+	}
+	if o.Username == "" || o.Password == "" {
+		return fmt.Errorf("either token or username+password must be provided")
+	}
+	return nil
 }
 
 type SessionStandard struct {
@@ -29,15 +50,21 @@ func NewSession(client *resty.Client) Session {
 	return &SessionStandard{client: client}
 }
 
-func (s *SessionStandard) Create(username, password string) (*SessionResponse, error) {
+func (s *SessionStandard) Create(opts *SessionCreateOptions) (*SessionResponse, error) {
+	if err := opts.Validate(); err != nil {
+		return nil, err
+	}
 	var result SessionResponse
-	resp, err := s.client.R().
-		SetBody(map[string]string{
-			"username": username,
-			"password": password,
-		}).
-		SetResult(&result).
-		Post("/api/v1/session")
+	req := s.client.R().SetResult(&result)
+	if opts.Token != "" {
+		req = req.SetHeader("Authorization", "Bearer "+opts.Token)
+	} else {
+		req = req.SetBody(map[string]string{
+			"username": opts.Username,
+			"password": opts.Password,
+		})
+	}
+	resp, err := req.Post("/api/v1/session")
 	if err != nil {
 		return nil, err
 	}

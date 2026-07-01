@@ -8,40 +8,40 @@ import (
 )
 
 type Cluster interface {
-	List() (*ClusterList, error)
-	Get(server string) (*ClusterModel, error)
-	Create(cluster *ClusterModel) (*ClusterModel, error)
-	Update(cluster *ClusterModel) (*ClusterModel, error)
-	Delete(server string) error
-	RotateAuth(server string) error
-	InvalidateCache(server string) error
+	List(opts *ClusterQueryOptions) (*ClusterList, error)
+	Get(server string, opts *ClusterQueryOptions) (*ClusterModel, error)
+	Create(cluster *ClusterModel, opts *ClusterCreateOptions) (*ClusterModel, error)
+	Update(cluster *ClusterModel, opts *ClusterUpdateOptions) (*ClusterModel, error)
+	Delete(server string, opts *ClusterQueryOptions) error
+	RotateAuth(server string, opts *ClusterQueryOptions) error
+	InvalidateCache(server string, opts *ClusterQueryOptions) error
 }
 
 type ClusterModel struct {
 	TypeMeta
 	ObjectMeta
-	Server          string           `json:"server"`
-	Name            string           `json:"name"`
-	Config          ClusterConfig    `json:"config"`
-	ConnectionState ConnectionState `json:"connectionState,omitempty"`
-	ServerVersion   string           `json:"serverVersion,omitempty"`
-	Namespaces      []string         `json:"namespaces,omitempty"`
-	ClusterResources bool            `json:"clusterResources,omitempty"`
-	Project         string           `json:"project,omitempty"`
-	Labels          map[string]string `json:"labels,omitempty"`
-	Annotations     map[string]string `json:"annotations,omitempty"`
+	Server             string           `json:"server"`
+	Name              string           `json:"name"`
+	Config            ClusterConfig    `json:"config"`
+	ConnectionState   ConnectionState  `json:"connectionState,omitempty"`
+	ServerVersion     string           `json:"serverVersion,omitempty"`
+	Namespaces        []string         `json:"namespaces,omitempty"`
+	ClusterResources  bool             `json:"clusterResources,omitempty"`
+	Project           string           `json:"project,omitempty"`
+	Labels            map[string]string `json:"labels,omitempty"`
+	Annotations       map[string]string `json:"annotations,omitempty"`
 	RefreshRequestedAt string          `json:"refreshRequestedAt,omitempty"`
-	Info            ClusterInfo      `json:"info,omitempty"`
-	Shard           *int64           `json:"shard,omitempty"`
+	Info              ClusterInfo      `json:"info,omitempty"`
+	Shard             *int64           `json:"shard,omitempty"`
 }
 
 type ClusterConfig struct {
-	Username            string                     `json:"username,omitempty"`
-	Password            string                     `json:"password,omitempty"`
-	BearerToken         string                     `json:"bearerToken,omitempty"`
-	TLSClientConfig     TLSClientConfig            `json:"tlsClientConfig"`
-	AWSAuthConfig       *AWSAuthConfig             `json:"awsAuthConfig,omitempty"`
-	ExecProviderConfig  *ExecProviderConfig        `json:"execProviderConfig,omitempty"`
+	Username          string           `json:"username,omitempty"`
+	Password          string           `json:"password,omitempty"`
+	BearerToken       string           `json:"bearerToken,omitempty"`
+	TLSClientConfig   TLSClientConfig  `json:"tlsClientConfig"`
+	AWSAuthConfig     *AWSAuthConfig   `json:"awsAuthConfig,omitempty"`
+	ExecProviderConfig *ExecProviderConfig `json:"execProviderConfig,omitempty"`
 }
 
 type TLSClientConfig struct {
@@ -73,21 +73,34 @@ type ConnectionState struct {
 }
 
 type ClusterInfo struct {
-	ConnectionState   ConnectionState `json:"connectionState"`
-	ServerVersion     string          `json:"serverVersion,omitempty"`
+	ConnectionState   ConnectionState  `json:"connectionState"`
+	ServerVersion     string           `json:"serverVersion,omitempty"`
 	CacheInfo         ClusterCacheInfo `json:"cacheInfo"`
-	ApplicationsCount int64           `json:"applicationsCount"`
-	APIVersions       []string        `json:"apiVersions,omitempty"`
+	ApplicationsCount int64            `json:"applicationsCount"`
+	APIVersions       []string         `json:"apiVersions,omitempty"`
 }
 
 type ClusterCacheInfo struct {
-	ResourcesCount      int64 `json:"resourcesCount,omitempty"`
-	APIsCount           int64 `json:"apisCount,omitempty"`
-	LastCacheSyncTime   string `json:"lastCacheSyncTime,omitempty"`
+	ResourcesCount     int64  `json:"resourcesCount,omitempty"`
+	APIsCount          int64  `json:"apisCount,omitempty"`
+	LastCacheSyncTime  string `json:"lastCacheSyncTime,omitempty"`
 }
 
 type ClusterList struct {
 	Items []*ClusterModel `json:"items"`
+}
+
+type ClusterQueryOptions struct {
+	Server string `json:"server,omitempty"`
+	Name   string `json:"name,omitempty"`
+}
+
+type ClusterCreateOptions struct {
+	Upsert bool `json:"upsert,omitempty"`
+}
+
+type ClusterUpdateOptions struct {
+	UpdatedFields []string `json:"updatedFields,omitempty"`
 }
 
 type ClusterStandard struct {
@@ -98,9 +111,18 @@ func NewCluster(client *resty.Client) Cluster {
 	return &ClusterStandard{client: client}
 }
 
-func (c *ClusterStandard) List() (*ClusterList, error) {
+func (c *ClusterStandard) List(opts *ClusterQueryOptions) (*ClusterList, error) {
+	req := c.client.R()
+	if opts != nil {
+		if opts.Server != "" {
+			req.SetQueryParam("server", opts.Server)
+		}
+		if opts.Name != "" {
+			req.SetQueryParam("name", opts.Name)
+		}
+	}
 	var result ClusterList
-	resp, err := c.client.R().
+	resp, err := req.
 		SetResult(&result).
 		Get("/api/v1/clusters")
 	if err != nil {
@@ -112,9 +134,15 @@ func (c *ClusterStandard) List() (*ClusterList, error) {
 	return &result, nil
 }
 
-func (c *ClusterStandard) Get(server string) (*ClusterModel, error) {
+func (c *ClusterStandard) Get(server string, opts *ClusterQueryOptions) (*ClusterModel, error) {
+	req := c.client.R()
+	if opts != nil {
+		if opts.Name != "" {
+			req.SetQueryParam("name", opts.Name)
+		}
+	}
 	var result ClusterModel
-	resp, err := c.client.R().
+	resp, err := req.
 		SetResult(&result).
 		Get(fmt.Sprintf("/api/v1/clusters/%s", encodeClusterServer(server)))
 	if err != nil {
@@ -126,9 +154,13 @@ func (c *ClusterStandard) Get(server string) (*ClusterModel, error) {
 	return &result, nil
 }
 
-func (c *ClusterStandard) Create(cluster *ClusterModel) (*ClusterModel, error) {
+func (c *ClusterStandard) Create(cluster *ClusterModel, opts *ClusterCreateOptions) (*ClusterModel, error) {
+	req := c.client.R()
+	if opts != nil && opts.Upsert {
+		req.SetQueryParam("upsert", "true")
+	}
 	var result ClusterModel
-	resp, err := c.client.R().
+	resp, err := req.
 		SetBody(cluster).
 		SetResult(&result).
 		Post("/api/v1/clusters")
@@ -141,9 +173,15 @@ func (c *ClusterStandard) Create(cluster *ClusterModel) (*ClusterModel, error) {
 	return &result, nil
 }
 
-func (c *ClusterStandard) Update(cluster *ClusterModel) (*ClusterModel, error) {
+func (c *ClusterStandard) Update(cluster *ClusterModel, opts *ClusterUpdateOptions) (*ClusterModel, error) {
+	req := c.client.R()
+	if opts != nil {
+		for _, f := range opts.UpdatedFields {
+			req.SetQueryParam("updatedFields", f)
+		}
+	}
 	var result ClusterModel
-	resp, err := c.client.R().
+	resp, err := req.
 		SetBody(cluster).
 		SetResult(&result).
 		Put(fmt.Sprintf("/api/v1/clusters/%s", encodeClusterServer(cluster.Server)))
@@ -156,8 +194,14 @@ func (c *ClusterStandard) Update(cluster *ClusterModel) (*ClusterModel, error) {
 	return &result, nil
 }
 
-func (c *ClusterStandard) Delete(server string) error {
-	resp, err := c.client.R().
+func (c *ClusterStandard) Delete(server string, opts *ClusterQueryOptions) error {
+	req := c.client.R()
+	if opts != nil {
+		if opts.Name != "" {
+			req.SetQueryParam("name", opts.Name)
+		}
+	}
+	resp, err := req.
 		Delete(fmt.Sprintf("/api/v1/clusters/%s", encodeClusterServer(server)))
 	if err != nil {
 		return err
@@ -168,8 +212,14 @@ func (c *ClusterStandard) Delete(server string) error {
 	return nil
 }
 
-func (c *ClusterStandard) RotateAuth(server string) error {
-	resp, err := c.client.R().
+func (c *ClusterStandard) RotateAuth(server string, opts *ClusterQueryOptions) error {
+	req := c.client.R()
+	if opts != nil {
+		if opts.Name != "" {
+			req.SetQueryParam("name", opts.Name)
+		}
+	}
+	resp, err := req.
 		Post(fmt.Sprintf("/api/v1/clusters/%s/rotate-auth", encodeClusterServer(server)))
 	if err != nil {
 		return err
@@ -180,8 +230,14 @@ func (c *ClusterStandard) RotateAuth(server string) error {
 	return nil
 }
 
-func (c *ClusterStandard) InvalidateCache(server string) error {
-	resp, err := c.client.R().
+func (c *ClusterStandard) InvalidateCache(server string, opts *ClusterQueryOptions) error {
+	req := c.client.R()
+	if opts != nil {
+		if opts.Name != "" {
+			req.SetQueryParam("name", opts.Name)
+		}
+	}
+	resp, err := req.
 		Post(fmt.Sprintf("/api/v1/clusters/%s/invalidate-cache", encodeClusterServer(server)))
 	if err != nil {
 		return err

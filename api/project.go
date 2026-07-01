@@ -9,13 +9,13 @@ import (
 type Project interface {
 	List() (*ProjectList, error)
 	Get(name string) (*ProjectModel, error)
-	Create(project *ProjectModel) (*ProjectModel, error)
+	Create(project *ProjectModel, opts *ProjectCreateOptions) (*ProjectModel, error)
 	Update(project *ProjectModel) (*ProjectModel, error)
 	Delete(name string) error
 	GetDetailed(name string) (*ProjectDetailed, error)
 	GetGlobalProjects(name string) (*ProjectGlobalResponse, error)
 	CreateToken(project, role string, opts *ProjectTokenCreateOptions) (*TokenResponse, error)
-	DeleteToken(project, role string, iat int64) error
+	DeleteToken(project, role string, iat int64, id string) error
 	ListEvents(name string) (*ResourceEventList, error)
 	GetSyncWindowsState(name string) (*SyncWindows, error)
 	ListLinks(name string) (*LinksResponse, error)
@@ -28,7 +28,7 @@ type ProjectModel struct {
 }
 
 type ProjectSpec struct {
-	SourceRepos              []string              `json:"sourceRepos,omitempty"`
+	SourceRepos                []string              `json:"sourceRepos,omitempty"`
 	Destinations             []ApplicationDestination `json:"destinations,omitempty"`
 	Description              string                `json:"description,omitempty"`
 	Roles                    []ProjectRole         `json:"roles,omitempty"`
@@ -96,6 +96,10 @@ type ProjectTokenCreateOptions struct {
 	Description string `json:"description,omitempty"`
 }
 
+type ProjectCreateOptions struct {
+	Upsert bool `json:"upsert,omitempty"`
+}
+
 type ProjectStandard struct {
 	client *resty.Client
 }
@@ -132,12 +136,15 @@ func (p *ProjectStandard) Get(name string) (*ProjectModel, error) {
 	return &result, nil
 }
 
-func (p *ProjectStandard) Create(project *ProjectModel) (*ProjectModel, error) {
+func (p *ProjectStandard) Create(project *ProjectModel, opts *ProjectCreateOptions) (*ProjectModel, error) {
 	var result ProjectModel
-	resp, err := p.client.R().
+	req := p.client.R().
 		SetBody(project).
-		SetResult(&result).
-		Post("/api/v1/projects")
+		SetResult(&result)
+	if opts != nil && opts.Upsert {
+		req.SetQueryParam("upsert", "true")
+	}
+	resp, err := req.Post("/api/v1/projects")
 	if err != nil {
 		return nil, err
 	}
@@ -217,9 +224,9 @@ func (p *ProjectStandard) CreateToken(project, role string, opts *ProjectTokenCr
 	return &result, nil
 }
 
-func (p *ProjectStandard) DeleteToken(project, role string, iat int64) error {
+func (p *ProjectStandard) DeleteToken(project, role string, iat int64, id string) error {
 	resp, err := p.client.R().
-		Delete(fmt.Sprintf("/api/v1/projects/%s/roles/%s/token/%d", project, role, iat))
+		Delete(fmt.Sprintf("/api/v1/projects/%s/roles/%s/token/%d/%s", project, role, iat, id))
 	if err != nil {
 		return err
 	}

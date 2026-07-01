@@ -9,18 +9,22 @@ import (
 type GPGKey interface {
 	List() (*GPGKeyList, error)
 	Get(keyID string) (*GPGKeyModel, error)
-	Create(key *GPGKeyModel) (*GPGKeyModel, error)
+	Create(key *GPGKeyModel, opts *GPGKeyCreateOptions) (*GPGKeyModel, error)
 	Delete(keyID string) error
 }
 
 type GPGKeyModel struct {
-	KeyID      string `json:"keyID,omitempty"`
-	KeyData    string `json:"keyData"`
-	SubType    string `json:"subType,omitempty"`
+	KeyID   string `json:"keyID,omitempty"`
+	KeyData string `json:"keyData"`
+	SubType string `json:"subType,omitempty"`
 }
 
 type GPGKeyList struct {
 	Items []*GPGKeyModel `json:"items"`
+}
+
+type GPGKeyCreateOptions struct {
+	Upsert bool `json:"upsert,omitempty"`
 }
 
 type GPGKeyStandard struct {
@@ -59,12 +63,15 @@ func (g *GPGKeyStandard) Get(keyID string) (*GPGKeyModel, error) {
 	return &result, nil
 }
 
-func (g *GPGKeyStandard) Create(key *GPGKeyModel) (*GPGKeyModel, error) {
+func (g *GPGKeyStandard) Create(key *GPGKeyModel, opts *GPGKeyCreateOptions) (*GPGKeyModel, error) {
 	var result GPGKeyModel
-	resp, err := g.client.R().
+	req := g.client.R().
 		SetBody(key).
-		SetResult(&result).
-		Post("/api/v1/gpgkeys")
+		SetResult(&result)
+	if opts != nil && opts.Upsert {
+		req = req.SetQueryParam("upsert", "true")
+	}
+	resp, err := req.Post("/api/v1/gpgkeys")
 	if err != nil {
 		return nil, err
 	}

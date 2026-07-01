@@ -8,16 +8,16 @@ import (
 
 type Certificate interface {
 	List(opts *CertificateQuery) (*CertificateList, error)
-	Create(certs *CertificateCreateRequest) (*CertificateList, error)
+	Create(certs *CertificateCreateRequest, opts *CertificateCreateOptions) (*CertificateList, error)
 	Delete(opts *CertificateQuery) error
 }
 
 type CertificateModel struct {
-	ServerName string `json:"serverName"`
-	CertType   string `json:"certType"`
+	ServerName  string `json:"serverName"`
+	CertType    string `json:"certType"`
 	CertSubType string `json:"certSubType"`
-	CertData   string `json:"certData"`
-	CertInfo   string `json:"certInfo"`
+	CertData    string `json:"certData"`
+	CertInfo    string `json:"certInfo"`
 }
 
 type CertificateList struct {
@@ -34,6 +34,10 @@ type CertificateQuery struct {
 	HostNamePattern string `json:"hostNamePattern,omitempty"`
 	CertType        string `json:"certType,omitempty"`
 	CertSubType     string `json:"certSubType,omitempty"`
+}
+
+type CertificateCreateOptions struct {
+	Upsert bool `json:"upsert,omitempty"`
 }
 
 type CertificateStandard struct {
@@ -64,12 +68,15 @@ func (c *CertificateStandard) List(opts *CertificateQuery) (*CertificateList, er
 	return &result, nil
 }
 
-func (c *CertificateStandard) Create(certs *CertificateCreateRequest) (*CertificateList, error) {
+func (c *CertificateStandard) Create(certs *CertificateCreateRequest, opts *CertificateCreateOptions) (*CertificateList, error) {
 	var result CertificateList
-	resp, err := c.client.R().
+	req := c.client.R().
 		SetBody(certs).
-		SetResult(&result).
-		Post("/api/v1/certificates")
+		SetResult(&result)
+	if opts != nil && opts.Upsert {
+		req = req.SetQueryParam("upsert", "true")
+	}
+	resp, err := req.Post("/api/v1/certificates")
 	if err != nil {
 		return nil, err
 	}

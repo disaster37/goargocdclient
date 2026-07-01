@@ -9,36 +9,40 @@ import (
 
 type RepoCreds interface {
 	List() (*RepoCredsList, error)
-	Create(creds *RepoCredsModel) (*RepoCredsModel, error)
+	Create(creds *RepoCredsModel, opts *RepoCredsCreateOptions) (*RepoCredsModel, error)
 	Update(creds *RepoCredsModel) (*RepoCredsModel, error)
 	Delete(url string) error
 	ListWrite() (*RepoCredsList, error)
-	CreateWrite(creds *RepoCredsModel) (*RepoCredsModel, error)
+	CreateWrite(creds *RepoCredsModel, opts *RepoCredsCreateOptions) (*RepoCredsModel, error)
 	UpdateWrite(creds *RepoCredsModel) (*RepoCredsModel, error)
 	DeleteWrite(url string) error
 }
 
 type RepoCredsModel struct {
-	URL              string `json:"url"`
-	Username         string `json:"username,omitempty"`
-	Password         string `json:"password,omitempty"`
-	SSHPrivateKey    string `json:"sshPrivateKey,omitempty"`
-	TLSClientCertData string `json:"tlsClientCertData,omitempty"`
-	TLSClientCertKey  string `json:"tlsClientCertKey,omitempty"`
-	GCPServiceAccountKey string `json:"gcpServiceAccountKey,omitempty"`
-	GitHubAppPrivateKey string `json:"githubAppPrivateKey,omitempty"`
-	GitHubAppID         int64  `json:"githubAppID,omitempty"`
-	GitHubAppInstallationID int64 `json:"githubAppInstallationID,omitempty"`
+	URL                        string `json:"url"`
+	Username                   string `json:"username,omitempty"`
+	Password                   string `json:"password,omitempty"`
+	SSHPrivateKey              string `json:"sshPrivateKey,omitempty"`
+	TLSClientCertData          string `json:"tlsClientCertData,omitempty"`
+	TLSClientCertKey           string `json:"tlsClientCertKey,omitempty"`
+	GCPServiceAccountKey       string `json:"gcpServiceAccountKey,omitempty"`
+	GitHubAppPrivateKey        string `json:"githubAppPrivateKey,omitempty"`
+	GitHubAppID                int64  `json:"githubAppID,omitempty"`
+	GitHubAppInstallationID    int64  `json:"githubAppInstallationID,omitempty"`
 	GitHubAppEnterpriseBaseURL string `json:"githubAppEnterpriseBaseUrl,omitempty"`
-	Type              string `json:"type,omitempty"`
-	Name              string `json:"name,omitempty"`
-	EnableOCI         bool   `json:"enableOCI,omitempty"`
-	Project           string `json:"project,omitempty"`
-	Proxy             string `json:"proxy,omitempty"`
+	Type                       string `json:"type,omitempty"`
+	Name                       string `json:"name,omitempty"`
+	EnableOCI                  bool   `json:"enableOCI,omitempty"`
+	Project                    string `json:"project,omitempty"`
+	Proxy                      string `json:"proxy,omitempty"`
 }
 
 type RepoCredsList struct {
 	Items []*RepoCredsModel `json:"items"`
+}
+
+type RepoCredsCreateOptions struct {
+	Upsert bool `json:"upsert,omitempty"`
 }
 
 type RepoCredsStandard struct {
@@ -63,12 +67,15 @@ func (r *RepoCredsStandard) List() (*RepoCredsList, error) {
 	return &result, nil
 }
 
-func (r *RepoCredsStandard) Create(creds *RepoCredsModel) (*RepoCredsModel, error) {
+func (r *RepoCredsStandard) Create(creds *RepoCredsModel, opts *RepoCredsCreateOptions) (*RepoCredsModel, error) {
 	var result RepoCredsModel
-	resp, err := r.client.R().
+	req := r.client.R().
 		SetBody(creds).
-		SetResult(&result).
-		Post("/api/v1/repocreds")
+		SetResult(&result)
+	if opts != nil && opts.Upsert {
+		req = req.SetQueryParam("upsert", "true")
+	}
+	resp, err := req.Post("/api/v1/repocreds")
 	if err != nil {
 		return nil, err
 	}
@@ -119,12 +126,15 @@ func (r *RepoCredsStandard) ListWrite() (*RepoCredsList, error) {
 	return &result, nil
 }
 
-func (r *RepoCredsStandard) CreateWrite(creds *RepoCredsModel) (*RepoCredsModel, error) {
+func (r *RepoCredsStandard) CreateWrite(creds *RepoCredsModel, opts *RepoCredsCreateOptions) (*RepoCredsModel, error) {
 	var result RepoCredsModel
-	resp, err := r.client.R().
+	req := r.client.R().
 		SetBody(creds).
-		SetResult(&result).
-		Post("/api/v1/write-repocreds")
+		SetResult(&result)
+	if opts != nil && opts.Upsert {
+		req = req.SetQueryParam("upsert", "true")
+	}
+	resp, err := req.Post("/api/v1/write-repocreds")
 	if err != nil {
 		return nil, err
 	}

@@ -23,7 +23,7 @@ func TestSessionCreate_Success(t *testing.T) {
 	defer server.Close()
 
 	s := NewSession(client)
-	resp, err := s.Create("admin", "pass")
+	resp, err := s.Create(&SessionCreateOptions{Username: "admin", Password: "pass"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,7 +39,7 @@ func TestSessionCreate_Error(t *testing.T) {
 	defer server.Close()
 
 	s := NewSession(client)
-	_, err := s.Create("admin", "wrong")
+	_, err := s.Create(&SessionCreateOptions{Username: "admin", Password: "wrong"})
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -106,7 +106,7 @@ func TestSessionGetUserInfo_Error(t *testing.T) {
 func TestSession_NetworkError(t *testing.T) {
 	client := newFailingClient()
 	s := NewSession(client)
-	_, err := s.Create("admin", "pass")
+	_, err := s.Create(&SessionCreateOptions{Username: "admin", Password: "pass"})
 	if err == nil {
 		t.Error("expected error")
 	}

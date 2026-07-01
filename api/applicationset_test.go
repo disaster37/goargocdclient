@@ -20,7 +20,7 @@ func TestApplicationSetList_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	list, err := a.List()
+	list, err := a.List(nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +36,7 @@ func TestApplicationSetGet_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	appset, err := a.Get("myappset")
+	appset, err := a.Get("myappset", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func TestApplicationSetCreate_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	appset, err := a.Create(&ApplicationSetModel{ObjectMeta: ObjectMeta{Name: "new"}})
+	appset, err := a.Create(&ApplicationSetModel{ObjectMeta: ObjectMeta{Name: "new"}}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func TestApplicationSetDelete_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	if err := a.Delete("myappset"); err != nil {
+	if err := a.Delete("myappset", nil); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -102,7 +102,7 @@ func TestApplicationSetResourceTree_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	tree, err := a.ResourceTree("myappset")
+	tree, err := a.ResourceTree("myappset", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -118,7 +118,7 @@ func TestApplicationSetListResourceEvents_Success(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	events, err := a.ListResourceEvents("myappset")
+	events, err := a.ListResourceEvents("myappset", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -134,7 +134,7 @@ func TestApplicationSetList_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	_, err := a.List()
+	_, err := a.List(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -147,7 +147,7 @@ func TestApplicationSetDelete_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	if err := a.Delete("nonexistent"); err == nil {
+	if err := a.Delete("nonexistent", nil); err == nil {
 		t.Error("expected error")
 	}
 }
@@ -159,7 +159,7 @@ func TestApplicationSetGet_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	_, err := a.Get("myappset")
+	_, err := a.Get("myappset", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -172,7 +172,7 @@ func TestApplicationSetCreate_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	_, err := a.Create(&ApplicationSetModel{ObjectMeta: ObjectMeta{Name: "new"}})
+	_, err := a.Create(&ApplicationSetModel{ObjectMeta: ObjectMeta{Name: "new"}}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -198,7 +198,7 @@ func TestApplicationSetResourceTree_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	_, err := a.ResourceTree("myappset")
+	_, err := a.ResourceTree("myappset", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -211,7 +211,7 @@ func TestApplicationSetListResourceEvents_Error(t *testing.T) {
 	defer server.Close()
 
 	a := NewApplicationSet(client)
-	_, err := a.ListResourceEvents("myappset")
+	_, err := a.ListResourceEvents("myappset", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -220,34 +220,34 @@ func TestApplicationSetListResourceEvents_Error(t *testing.T) {
 func TestApplicationSet_NetworkError(t *testing.T) {
 	client := newFailingClient()
 	a := NewApplicationSet(client)
-	_, err := a.List()
+	_, err := a.List(nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.Get("myappset")
+	_, err = a.Get("myappset", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.Create(&ApplicationSetModel{ObjectMeta: ObjectMeta{Name: "new"}})
+	_, err = a.Create(&ApplicationSetModel{ObjectMeta: ObjectMeta{Name: "new"}}, nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	if err = a.Delete("myappset"); err == nil {
+	if err = a.Delete("myappset", nil); err == nil {
 		t.Error("expected error")
 	}
 	_, err = a.Generate(&ApplicationSetModel{ObjectMeta: ObjectMeta{Name: "generator"}})
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.ResourceTree("myappset")
+	_, err = a.ResourceTree("myappset", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.ListResourceEvents("myappset")
+	_, err = a.ListResourceEvents("myappset", nil)
 	if err == nil {
 		t.Error("expected error")
 	}
-	_, err = a.Watch(context.Background())
+	_, err = a.Watch(context.Background(), nil)
 	if err == nil {
 		t.Error("expected error")
 	}
@@ -278,7 +278,7 @@ func TestApplicationSetWatch_Success(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	a := NewApplicationSet(client)
-	ch, err := a.Watch(ctx)
+	ch, err := a.Watch(ctx, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -307,7 +307,7 @@ func TestApplicationSetWatch_SSEError(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	a := NewApplicationSet(client)
-	_, err := a.Watch(ctx)
+	_, err := a.Watch(ctx, nil)
 	if err == nil {
 		t.Error("expected error")
 	}

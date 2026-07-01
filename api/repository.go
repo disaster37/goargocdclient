@@ -8,45 +8,45 @@ import (
 )
 
 type Repository interface {
-	List() (*RepositoryList, error)
-	Get(repo string) (*RepositoryModel, error)
-	Create(repo *RepositoryModel) (*RepositoryModel, error)
+	List(opts *RepositoryQueryOptions) (*RepositoryList, error)
+	Get(repo string, opts *RepositoryQueryOptions) (*RepositoryModel, error)
+	Create(repo *RepositoryModel, opts *RepositoryCreateOptions) (*RepositoryModel, error)
 	Update(repo *RepositoryModel) (*RepositoryModel, error)
-	Delete(repo string) error
-	ListApps(repo string) (*RepositoryAppsList, error)
+	Delete(repo string, opts *RepositoryQueryOptions) error
+	ListApps(repo string, opts *RepoAppsQueryOptions) (*RepositoryAppsList, error)
 	GetAppDetails(opts *RepoAppDetailsQuery) (*RepoAppDetails, error)
-	GetHelmCharts(repo string) (*HelmChartsResponse, error)
-	ListRefs(repo string) (*RefsResponse, error)
-	ListOCITags(repo string) (*OCITagsResponse, error)
+	GetHelmCharts(repo string, opts *RepositoryQueryOptions) (*HelmChartsResponse, error)
+	ListRefs(repo string, opts *RepositoryQueryOptions) (*RefsResponse, error)
+	ListOCITags(repo string, opts *RepositoryQueryOptions) (*OCITagsResponse, error)
 	ValidateAccess(opts *RepoAccessQuery) error
-	ListWriteRepositories() (*RepositoryList, error)
-	GetWrite(repo string) (*RepositoryModel, error)
-	CreateWriteRepository(repo *RepositoryModel) (*RepositoryModel, error)
+	ListWriteRepositories(opts *RepositoryQueryOptions) (*RepositoryList, error)
+	GetWrite(repo string, opts *RepositoryQueryOptions) (*RepositoryModel, error)
+	CreateWriteRepository(repo *RepositoryModel, opts *RepositoryCreateOptions) (*RepositoryModel, error)
 	UpdateWriteRepository(repo *RepositoryModel) (*RepositoryModel, error)
-	DeleteWriteRepository(repo string) error
+	DeleteWriteRepository(repo string, opts *RepositoryQueryOptions) error
 	ValidateWriteAccess(opts *RepoAccessQuery) error
 }
 
 type RepositoryModel struct {
 	TypeMeta
 	ObjectMeta
-	Repo          string `json:"repo"`
-	Username      string `json:"username,omitempty"`
-	Password      string `json:"password,omitempty"`
-	SSHPrivateKey string `json:"sshPrivateKey,omitempty"`
-	Insecure      bool   `json:"insecure,omitempty"`
-	EnableLFS     bool   `json:"enableLfs,omitempty"`
-	EnableOCI     bool   `json:"enableOCI,omitempty"`
-	Type          string `json:"type,omitempty"`
-	Name          string `json:"name,omitempty"`
-	Project       string `json:"project,omitempty"`
-	InheritedCreds bool  `json:"inheritedCreds,omitempty"`
-	TLSClientCertData string `json:"tlsClientCertData,omitempty"`
-	TLSClientCertKey  string `json:"tlsClientCertKey,omitempty"`
-	GCPServiceAccountKey string `json:"gcpServiceAccountKey,omitempty"`
-	Proxy          string `json:"proxy,omitempty"`
-	ForceHTTPBasicAuth bool `json:"forceHttpBasicAuth,omitempty"`
-	ConnectionState ConnectionState `json:"connectionState,omitempty"`
+	Repo                string          `json:"repo"`
+	Username            string          `json:"username,omitempty"`
+	Password            string          `json:"password,omitempty"`
+	SSHPrivateKey       string          `json:"sshPrivateKey,omitempty"`
+	Insecure            bool            `json:"insecure,omitempty"`
+	EnableLFS           bool            `json:"enableLfs,omitempty"`
+	EnableOCI           bool            `json:"enableOCI,omitempty"`
+	Type                string          `json:"type,omitempty"`
+	Name                string          `json:"name,omitempty"`
+	Project             string          `json:"project,omitempty"`
+	InheritedCreds      bool            `json:"inheritedCreds,omitempty"`
+	TLSClientCertData   string          `json:"tlsClientCertData,omitempty"`
+	TLSClientCertKey    string          `json:"tlsClientCertKey,omitempty"`
+	GCPServiceAccountKey string         `json:"gcpServiceAccountKey,omitempty"`
+	Proxy               string          `json:"proxy,omitempty"`
+	ForceHTTPBasicAuth  bool            `json:"forceHttpBasicAuth,omitempty"`
+	ConnectionState     ConnectionState `json:"connectionState,omitempty"`
 }
 
 type RepositoryList struct {
@@ -58,18 +58,20 @@ type RepositoryAppsList struct {
 }
 
 type RepoApp struct {
-	RepoURL       string `json:"repoUrl"`
-	Path          string `json:"path"`
-	Type          string `json:"type"`
-	AppName       string `json:"appName,omitempty"`
-	ClusterName   string `json:"clusterName,omitempty"`
-	NameSpace     string `json:"namespace,omitempty"`
+	RepoURL     string `json:"repoUrl"`
+	Path        string `json:"path"`
+	Type        string `json:"type"`
+	AppName     string `json:"appName,omitempty"`
+	ClusterName string `json:"clusterName,omitempty"`
+	NameSpace   string `json:"namespace,omitempty"`
 }
 
 type RepoAppDetailsQuery struct {
-	Source    ApplicationSource       `json:"source"`
-	AppName   string                  `json:"appName,omitempty"`
-	AppProject   string               `json:"appProject,omitempty"`
+	Source      ApplicationSource `json:"source"`
+	AppName     string            `json:"appName,omitempty"`
+	AppProject  string            `json:"appProject,omitempty"`
+	SourceIndex *int32            `json:"sourceIndex,omitempty"`
+	VersionId   *int32            `json:"versionId,omitempty"`
 }
 
 type RepoAppDetails struct {
@@ -83,7 +85,7 @@ type RepoAppDetails struct {
 }
 
 type KustomizeAppSpec struct {
-	Path  string   `json:"path,omitempty"`
+	Path   string   `json:"path,omitempty"`
 	Images []string `json:"images,omitempty"`
 }
 
@@ -91,11 +93,11 @@ type DirectoryAppSpec struct {
 }
 
 type HelmAppSpec struct {
-	Name          string       `json:"name,omitempty"`
-	ValueFiles    []string     `json:"valueFiles,omitempty"`
-	Parameters    []HelmParameter `json:"parameters,omitempty"`
+	Name          string               `json:"name,omitempty"`
+	ValueFiles    []string             `json:"valueFiles,omitempty"`
+	Parameters    []HelmParameter      `json:"parameters,omitempty"`
 	FileParameters []HelmFileParameter `json:"fileParameters,omitempty"`
-	Values        string       `json:"values,omitempty"`
+	Values        string               `json:"values,omitempty"`
 }
 
 type PluginAppSpec struct {
@@ -125,18 +127,46 @@ type OCITagsResponse struct {
 }
 
 type RepoAccessQuery struct {
-	Repo              string `json:"repo"`
-	Username          string `json:"username,omitempty"`
-	Password          string `json:"password,omitempty"`
-	SSHPrivateKey     string `json:"sshPrivateKey,omitempty"`
-	TLSClientCertData string `json:"tlsClientCertData,omitempty"`
-	TLSClientCertKey  string `json:"tlsClientCertKey,omitempty"`
-	Type              string `json:"type,omitempty"`
-	Name              string `json:"name,omitempty"`
-	Insecure          bool   `json:"insecure,omitempty"`
-	EnableOCI         bool   `json:"enableOCI,omitempty"`
-	Proxy             string `json:"proxy,omitempty"`
-	ForceHTTPBasicAuth bool  `json:"forceHttpBasicAuth,omitempty"`
+	Repo                          string `json:"repo"`
+	Username                      string `json:"username,omitempty"`
+	Password                      string `json:"password,omitempty"`
+	SSHPrivateKey                 string `json:"sshPrivateKey,omitempty"`
+	TLSClientCertData             string `json:"tlsClientCertData,omitempty"`
+	TLSClientCertKey              string `json:"tlsClientCertKey,omitempty"`
+	Type                          string `json:"type,omitempty"`
+	Name                          string `json:"name,omitempty"`
+	Insecure                      bool   `json:"insecure,omitempty"`
+	EnableOCI                     bool   `json:"enableOCI,omitempty"`
+	Proxy                         string `json:"proxy,omitempty"`
+	ForceHTTPBasicAuth            bool   `json:"forceHttpBasicAuth,omitempty"`
+	GitHubAppPrivateKey           string `json:"githubAppPrivateKey,omitempty"`
+	GitHubAppID                   int64  `json:"githubAppID,omitempty"`
+	GitHubAppInstallationID       int64  `json:"githubAppInstallationID,omitempty"`
+	GitHubAppEnterpriseBaseUrl    string `json:"githubAppEnterpriseBaseUrl,omitempty"`
+	GCPServiceAccountKey          string `json:"gcpServiceAccountKey,omitempty"`
+	BearerToken                   string `json:"bearerToken,omitempty"`
+	InsecureOCIForceHttp          bool   `json:"insecureOCIForceHttp,omitempty"`
+	AzureServicePrincipalClientId     string `json:"azureServicePrincipalClientId,omitempty"`
+	AzureServicePrincipalClientSecret string `json:"azureServicePrincipalClientSecret,omitempty"`
+	AzureServicePrincipalTenantId     string `json:"azureServicePrincipalTenantId,omitempty"`
+	AzureActiveDirectoryEndpoint      string `json:"azureActiveDirectoryEndpoint,omitempty"`
+}
+
+type RepositoryQueryOptions struct {
+	Repo         string `json:"repo,omitempty"`
+	ForceRefresh bool   `json:"forceRefresh,omitempty"`
+	AppProject   string `json:"appProject,omitempty"`
+}
+
+type RepositoryCreateOptions struct {
+	Upsert    bool `json:"upsert,omitempty"`
+	CredsOnly bool `json:"credsOnly,omitempty"`
+}
+
+type RepoAppsQueryOptions struct {
+	Revision   string `json:"revision,omitempty"`
+	AppName    string `json:"appName,omitempty"`
+	AppProject string `json:"appProject,omitempty"`
 }
 
 type RepositoryStandard struct {
@@ -147,11 +177,53 @@ func NewRepository(client *resty.Client) Repository {
 	return &RepositoryStandard{client: client}
 }
 
-func (r *RepositoryStandard) List() (*RepositoryList, error) {
+func addRepositoryQueryOptions(req *resty.Request, opts *RepositoryQueryOptions) *resty.Request {
+	if opts == nil {
+		return req
+	}
+	if opts.Repo != "" {
+		req.SetQueryParam("repo", opts.Repo)
+	}
+	if opts.ForceRefresh {
+		req.SetQueryParam("forceRefresh", "true")
+	}
+	if opts.AppProject != "" {
+		req.SetQueryParam("appProject", opts.AppProject)
+	}
+	return req
+}
+
+func addRepoAppsQueryOptions(req *resty.Request, opts *RepoAppsQueryOptions) *resty.Request {
+	if opts == nil {
+		return req
+	}
+	if opts.Revision != "" {
+		req.SetQueryParam("revision", opts.Revision)
+	}
+	if opts.AppName != "" {
+		req.SetQueryParam("appName", opts.AppName)
+	}
+	if opts.AppProject != "" {
+		req.SetQueryParam("appProject", opts.AppProject)
+	}
+	return req
+}
+
+func addRepositoryCreateOptions(req *resty.Request, opts *RepositoryCreateOptions) *resty.Request {
+	if opts == nil {
+		return req
+	}
+	req.SetQueryParam("upsert", fmt.Sprintf("%v", opts.Upsert))
+	req.SetQueryParam("credsOnly", fmt.Sprintf("%v", opts.CredsOnly))
+	return req
+}
+
+func (r *RepositoryStandard) List(opts *RepositoryQueryOptions) (*RepositoryList, error) {
 	var result RepositoryList
-	resp, err := r.client.R().
-		SetResult(&result).
-		Get("/api/v1/repositories")
+	req := r.client.R().
+		SetResult(&result)
+	req = addRepositoryQueryOptions(req, opts)
+	resp, err := req.Get("/api/v1/repositories")
 	if err != nil {
 		return nil, err
 	}
@@ -161,11 +233,12 @@ func (r *RepositoryStandard) List() (*RepositoryList, error) {
 	return &result, nil
 }
 
-func (r *RepositoryStandard) Get(repo string) (*RepositoryModel, error) {
+func (r *RepositoryStandard) Get(repo string, opts *RepositoryQueryOptions) (*RepositoryModel, error) {
 	var result RepositoryModel
-	resp, err := r.client.R().
-		SetResult(&result).
-		Get(fmt.Sprintf("/api/v1/repositories/%s", url.PathEscape(repo)))
+	req := r.client.R().
+		SetResult(&result)
+	req = addRepositoryQueryOptions(req, opts)
+	resp, err := req.Get(fmt.Sprintf("/api/v1/repositories/%s", url.PathEscape(repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -175,12 +248,13 @@ func (r *RepositoryStandard) Get(repo string) (*RepositoryModel, error) {
 	return &result, nil
 }
 
-func (r *RepositoryStandard) Create(repo *RepositoryModel) (*RepositoryModel, error) {
+func (r *RepositoryStandard) Create(repo *RepositoryModel, opts *RepositoryCreateOptions) (*RepositoryModel, error) {
 	var result RepositoryModel
-	resp, err := r.client.R().
+	req := r.client.R().
 		SetBody(repo).
-		SetResult(&result).
-		Post("/api/v1/repositories")
+		SetResult(&result)
+	req = addRepositoryCreateOptions(req, opts)
+	resp, err := req.Post("/api/v1/repositories")
 	if err != nil {
 		return nil, err
 	}
@@ -205,9 +279,10 @@ func (r *RepositoryStandard) Update(repo *RepositoryModel) (*RepositoryModel, er
 	return &result, nil
 }
 
-func (r *RepositoryStandard) Delete(repo string) error {
-	resp, err := r.client.R().
-		Delete(fmt.Sprintf("/api/v1/repositories/%s", url.PathEscape(repo)))
+func (r *RepositoryStandard) Delete(repo string, opts *RepositoryQueryOptions) error {
+	req := r.client.R()
+	req = addRepositoryQueryOptions(req, opts)
+	resp, err := req.Delete(fmt.Sprintf("/api/v1/repositories/%s", url.PathEscape(repo)))
 	if err != nil {
 		return err
 	}
@@ -217,11 +292,12 @@ func (r *RepositoryStandard) Delete(repo string) error {
 	return nil
 }
 
-func (r *RepositoryStandard) ListApps(repo string) (*RepositoryAppsList, error) {
+func (r *RepositoryStandard) ListApps(repo string, opts *RepoAppsQueryOptions) (*RepositoryAppsList, error) {
 	var result RepositoryAppsList
-	resp, err := r.client.R().
-		SetResult(&result).
-		Get(fmt.Sprintf("/api/v1/repositories/%s/apps", url.PathEscape(repo)))
+	req := r.client.R().
+		SetResult(&result)
+	req = addRepoAppsQueryOptions(req, opts)
+	resp, err := req.Get(fmt.Sprintf("/api/v1/repositories/%s/apps", url.PathEscape(repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -246,11 +322,12 @@ func (r *RepositoryStandard) GetAppDetails(opts *RepoAppDetailsQuery) (*RepoAppD
 	return &result, nil
 }
 
-func (r *RepositoryStandard) GetHelmCharts(repo string) (*HelmChartsResponse, error) {
+func (r *RepositoryStandard) GetHelmCharts(repo string, opts *RepositoryQueryOptions) (*HelmChartsResponse, error) {
 	var result HelmChartsResponse
-	resp, err := r.client.R().
-		SetResult(&result).
-		Get(fmt.Sprintf("/api/v1/repositories/%s/helmcharts", url.PathEscape(repo)))
+	req := r.client.R().
+		SetResult(&result)
+	req = addRepositoryQueryOptions(req, opts)
+	resp, err := req.Get(fmt.Sprintf("/api/v1/repositories/%s/helmcharts", url.PathEscape(repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -260,11 +337,12 @@ func (r *RepositoryStandard) GetHelmCharts(repo string) (*HelmChartsResponse, er
 	return &result, nil
 }
 
-func (r *RepositoryStandard) ListRefs(repo string) (*RefsResponse, error) {
+func (r *RepositoryStandard) ListRefs(repo string, opts *RepositoryQueryOptions) (*RefsResponse, error) {
 	var result RefsResponse
-	resp, err := r.client.R().
-		SetResult(&result).
-		Get(fmt.Sprintf("/api/v1/repositories/%s/refs", url.PathEscape(repo)))
+	req := r.client.R().
+		SetResult(&result)
+	req = addRepositoryQueryOptions(req, opts)
+	resp, err := req.Get(fmt.Sprintf("/api/v1/repositories/%s/refs", url.PathEscape(repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -274,11 +352,12 @@ func (r *RepositoryStandard) ListRefs(repo string) (*RefsResponse, error) {
 	return &result, nil
 }
 
-func (r *RepositoryStandard) ListOCITags(repo string) (*OCITagsResponse, error) {
+func (r *RepositoryStandard) ListOCITags(repo string, opts *RepositoryQueryOptions) (*OCITagsResponse, error) {
 	var result OCITagsResponse
-	resp, err := r.client.R().
-		SetResult(&result).
-		Get(fmt.Sprintf("/api/v1/repositories/%s/oci/tags", url.PathEscape(repo)))
+	req := r.client.R().
+		SetResult(&result)
+	req = addRepositoryQueryOptions(req, opts)
+	resp, err := req.Get(fmt.Sprintf("/api/v1/repositories/%s/oci/tags", url.PathEscape(repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -301,11 +380,12 @@ func (r *RepositoryStandard) ValidateAccess(opts *RepoAccessQuery) error {
 	return nil
 }
 
-func (r *RepositoryStandard) ListWriteRepositories() (*RepositoryList, error) {
+func (r *RepositoryStandard) ListWriteRepositories(opts *RepositoryQueryOptions) (*RepositoryList, error) {
 	var result RepositoryList
-	resp, err := r.client.R().
-		SetResult(&result).
-		Get("/api/v1/write-repositories")
+	req := r.client.R().
+		SetResult(&result)
+	req = addRepositoryQueryOptions(req, opts)
+	resp, err := req.Get("/api/v1/write-repositories")
 	if err != nil {
 		return nil, err
 	}
@@ -315,11 +395,12 @@ func (r *RepositoryStandard) ListWriteRepositories() (*RepositoryList, error) {
 	return &result, nil
 }
 
-func (r *RepositoryStandard) GetWrite(repo string) (*RepositoryModel, error) {
+func (r *RepositoryStandard) GetWrite(repo string, opts *RepositoryQueryOptions) (*RepositoryModel, error) {
 	var result RepositoryModel
-	resp, err := r.client.R().
-		SetResult(&result).
-		Get(fmt.Sprintf("/api/v1/write-repositories/%s", url.PathEscape(repo)))
+	req := r.client.R().
+		SetResult(&result)
+	req = addRepositoryQueryOptions(req, opts)
+	resp, err := req.Get(fmt.Sprintf("/api/v1/write-repositories/%s", url.PathEscape(repo)))
 	if err != nil {
 		return nil, err
 	}
@@ -329,12 +410,13 @@ func (r *RepositoryStandard) GetWrite(repo string) (*RepositoryModel, error) {
 	return &result, nil
 }
 
-func (r *RepositoryStandard) CreateWriteRepository(repo *RepositoryModel) (*RepositoryModel, error) {
+func (r *RepositoryStandard) CreateWriteRepository(repo *RepositoryModel, opts *RepositoryCreateOptions) (*RepositoryModel, error) {
 	var result RepositoryModel
-	resp, err := r.client.R().
+	req := r.client.R().
 		SetBody(repo).
-		SetResult(&result).
-		Post("/api/v1/write-repositories")
+		SetResult(&result)
+	req = addRepositoryCreateOptions(req, opts)
+	resp, err := req.Post("/api/v1/write-repositories")
 	if err != nil {
 		return nil, err
 	}
@@ -359,9 +441,10 @@ func (r *RepositoryStandard) UpdateWriteRepository(repo *RepositoryModel) (*Repo
 	return &result, nil
 }
 
-func (r *RepositoryStandard) DeleteWriteRepository(repo string) error {
-	resp, err := r.client.R().
-		Delete(fmt.Sprintf("/api/v1/write-repositories/%s", url.PathEscape(repo)))
+func (r *RepositoryStandard) DeleteWriteRepository(repo string, opts *RepositoryQueryOptions) error {
+	req := r.client.R()
+	req = addRepositoryQueryOptions(req, opts)
+	resp, err := req.Delete(fmt.Sprintf("/api/v1/write-repositories/%s", url.PathEscape(repo)))
 	if err != nil {
 		return err
 	}
