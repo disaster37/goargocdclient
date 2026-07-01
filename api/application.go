@@ -614,7 +614,6 @@ type LinkItem struct {
 type WatchOptions struct {
 	Revision        string   `json:"revision,omitempty"`
 	Namespace       string   `json:"namespace,omitempty"`
-	Projects        []string `json:"projects,omitempty"`
 	ResourceVersion string   `json:"resourceVersion,omitempty"`
 	Selector        string   `json:"selector,omitempty"`
 	Repo            string   `json:"repo,omitempty"`
@@ -657,7 +656,6 @@ type LogEntry struct {
 
 type ApplicationListOptions struct {
 	Refresh         string   `json:"refresh,omitempty"`
-	Projects        []string `json:"projects,omitempty"`
 	ResourceVersion string   `json:"resourceVersion,omitempty"`
 	Selector        string   `json:"selector,omitempty"`
 	Repo            string   `json:"repo,omitempty"`
@@ -667,7 +665,6 @@ type ApplicationListOptions struct {
 
 type ApplicationGetOptions struct {
 	Refresh         string   `json:"refresh,omitempty"`
-	Projects        []string `json:"projects,omitempty"`
 	ResourceVersion string   `json:"resourceVersion,omitempty"`
 	Selector        string   `json:"selector,omitempty"`
 	Repo            string   `json:"repo,omitempty"`
@@ -741,7 +738,6 @@ func (a *ApplicationStandard) List(opts *ApplicationListOptions) (*ApplicationLi
 		if opts.Repo != "" { params["repo"] = opts.Repo }
 		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
 		if len(params) > 0 { req = req.SetQueryParams(params) }
-		for _, p := range opts.Projects { req = req.SetQueryParam("projects", p) }
 		for _, p := range opts.Project { req = req.SetQueryParam("project", p) }
 	}
 	resp, err := req.Get("/api/v1/applications")
@@ -761,7 +757,6 @@ func (a *ApplicationStandard) Get(name string, opts *ApplicationGetOptions) (*Ap
 		if opts.Repo != "" { params["repo"] = opts.Repo }
 		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
 		if len(params) > 0 { req = req.SetQueryParams(params) }
-		for _, p := range opts.Projects { req = req.SetQueryParam("projects", p) }
 		for _, p := range opts.Project { req = req.SetQueryParam("project", p) }
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s", name))
@@ -1083,7 +1078,6 @@ func (a *ApplicationStandard) Watch(ctx context.Context, opts *WatchOptions) (<-
 		if opts.Repo != "" { params["repo"] = opts.Repo }
 		if opts.Refresh != "" { params["refresh"] = opts.Refresh }
 		if len(params) > 0 { req = req.SetQueryParams(params) }
-		for _, p := range opts.Projects { req = req.SetQueryParam("projects", p) }
 		for _, p := range opts.Project { req = req.SetQueryParam("project", p) }
 	}
 	resp, err := req.Get("/api/v1/stream/applications")
