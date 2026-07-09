@@ -24,6 +24,31 @@ func TestClusterList_Success(t *testing.T) {
 	}
 }
 
+func TestClusterList_WithOpts(t *testing.T) {
+	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		if q.Get("server") != "https://example.com" {
+			t.Errorf("expected server query param, got %q", q.Get("server"))
+		}
+		if q.Get("name") != "my-cluster" {
+			t.Errorf("expected name query param, got %q", q.Get("name"))
+		}
+		jsonResponse(w, 200, ClusterList{Items: []*ClusterModel{
+			{Name: "my-cluster", Server: "https://example.com"},
+		}})
+	}))
+	defer server.Close()
+
+	c := NewCluster(client)
+	list, err := c.List(&ClusterQueryOptions{Server: "https://example.com", Name: "my-cluster"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(list.Items) != 1 || list.Items[0].Name != "my-cluster" {
+		t.Errorf("unexpected list: %+v", list)
+	}
+}
+
 func TestClusterGet_Success(t *testing.T) {
 	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.RawPath == "" {
@@ -43,6 +68,29 @@ func TestClusterGet_Success(t *testing.T) {
 	}
 }
 
+func TestClusterGet_WithOpts(t *testing.T) {
+	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		if q.Get("name") != "my-cluster" {
+			t.Errorf("expected name query param, got %q", q.Get("name"))
+		}
+		if q.Get("id.type") != "name" {
+			t.Errorf("expected id.type query param, got %q", q.Get("id.type"))
+		}
+		jsonResponse(w, 200, ClusterModel{Name: "my-cluster", Server: "https://example.com"})
+	}))
+	defer server.Close()
+
+	c := NewCluster(client)
+	cluster, err := c.Get("https://example.com", &ClusterQueryOptions{Name: "my-cluster", IdType: "name"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cluster.Name != "my-cluster" {
+		t.Errorf("unexpected cluster: %+v", cluster)
+	}
+}
+
 func TestClusterCreate_Success(t *testing.T) {
 	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var cluster ClusterModel
@@ -53,6 +101,26 @@ func TestClusterCreate_Success(t *testing.T) {
 
 	c := NewCluster(client)
 	cluster, err := c.Create(&ClusterModel{Name: "new-cluster", Server: "https://1.2.3.4"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cluster.Name != "new-cluster" {
+		t.Errorf("unexpected cluster: %+v", cluster)
+	}
+}
+func TestClusterCreate_WithUpsert(t *testing.T) {
+	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("upsert") != "true" {
+			t.Errorf("expected upsert query param, got %q", r.URL.Query().Get("upsert"))
+		}
+		var cluster ClusterModel
+		json.NewDecoder(r.Body).Decode(&cluster)
+		jsonResponse(w, 201, cluster)
+	}))
+	defer server.Close()
+
+	c := NewCluster(client)
+	cluster, err := c.Create(&ClusterModel{Name: "new-cluster", Server: "https://1.2.3.4"}, &ClusterCreateOptions{Upsert: true})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,6 +147,24 @@ func TestClusterUpdate_Success(t *testing.T) {
 		t.Errorf("unexpected cluster: %+v", cluster)
 	}
 }
+func TestClusterUpdate_WithUpdatedFields(t *testing.T) {
+	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("updatedFields") != "name" {
+			t.Errorf("expected updatedFields query param, got %q", r.URL.Query().Get("updatedFields"))
+		}
+		jsonResponse(w, 200, ClusterModel{Name: "updated", Server: "https://1.2.3.4"})
+	}))
+	defer server.Close()
+
+	c := NewCluster(client)
+	cluster, err := c.Update(&ClusterModel{Name: "updated", Server: "https://1.2.3.4"}, &ClusterUpdateOptions{UpdatedFields: []string{"name"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cluster.Name != "updated" {
+		t.Errorf("unexpected cluster: %+v", cluster)
+	}
+}
 
 func TestClusterDelete_Success(t *testing.T) {
 	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -91,6 +177,25 @@ func TestClusterDelete_Success(t *testing.T) {
 
 	c := NewCluster(client)
 	if err := c.Delete("https://kubernetes.default.svc", nil); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClusterDelete_WithOpts(t *testing.T) {
+	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		if q.Get("name") != "my-cluster" {
+			t.Errorf("expected name query param, got %q", q.Get("name"))
+		}
+		if q.Get("id.type") != "name" {
+			t.Errorf("expected id.type query param, got %q", q.Get("id.type"))
+		}
+		w.WriteHeader(200)
+	}))
+	defer server.Close()
+
+	c := NewCluster(client)
+	if err := c.Delete("https://example.com", &ClusterQueryOptions{Name: "my-cluster", IdType: "name"}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -110,6 +215,25 @@ func TestClusterRotateAuth_Success(t *testing.T) {
 	}
 }
 
+func TestClusterRotateAuth_WithOpts(t *testing.T) {
+	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		if q.Get("name") != "my-cluster" {
+			t.Errorf("expected name query param, got %q", q.Get("name"))
+		}
+		if q.Get("id.type") != "name" {
+			t.Errorf("expected id.type query param, got %q", q.Get("id.type"))
+		}
+		w.WriteHeader(200)
+	}))
+	defer server.Close()
+
+	c := NewCluster(client)
+	if err := c.RotateAuth("https://example.com", &ClusterQueryOptions{Name: "my-cluster", IdType: "name"}); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestClusterInvalidateCache_Success(t *testing.T) {
 	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.RawPath == "" {
@@ -121,6 +245,25 @@ func TestClusterInvalidateCache_Success(t *testing.T) {
 
 	c := NewCluster(client)
 	if err := c.InvalidateCache("https://kubernetes.default.svc", nil); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClusterInvalidateCache_WithOpts(t *testing.T) {
+	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		if q.Get("name") != "my-cluster" {
+			t.Errorf("expected name query param, got %q", q.Get("name"))
+		}
+		if q.Get("id.type") != "name" {
+			t.Errorf("expected id.type query param, got %q", q.Get("id.type"))
+		}
+		w.WriteHeader(200)
+	}))
+	defer server.Close()
+
+	c := NewCluster(client)
+	if err := c.InvalidateCache("https://example.com", &ClusterQueryOptions{Name: "my-cluster", IdType: "name"}); err != nil {
 		t.Fatal(err)
 	}
 }

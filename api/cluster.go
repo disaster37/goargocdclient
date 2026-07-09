@@ -93,6 +93,7 @@ type ClusterList struct {
 type ClusterQueryOptions struct {
 	Server string `json:"server,omitempty"`
 	Name   string `json:"name,omitempty"`
+	IdType string `json:"id.type,omitempty"`
 }
 
 type ClusterCreateOptions struct {
@@ -139,6 +140,9 @@ func (c *ClusterStandard) Get(server string, opts *ClusterQueryOptions) (*Cluste
 	if opts != nil {
 		if opts.Name != "" {
 			req.SetQueryParam("name", opts.Name)
+		}
+		if opts.IdType != "" {
+			req.SetQueryParam("id.type", opts.IdType)
 		}
 	}
 	var result ClusterModel
@@ -200,6 +204,9 @@ func (c *ClusterStandard) Delete(server string, opts *ClusterQueryOptions) error
 		if opts.Name != "" {
 			req.SetQueryParam("name", opts.Name)
 		}
+		if opts.IdType != "" {
+			req.SetQueryParam("id.type", opts.IdType)
+		}
 	}
 	resp, err := req.
 		Delete(fmt.Sprintf("/api/v1/clusters/%s", encodeClusterServer(server)))
@@ -218,6 +225,9 @@ func (c *ClusterStandard) RotateAuth(server string, opts *ClusterQueryOptions) e
 		if opts.Name != "" {
 			req.SetQueryParam("name", opts.Name)
 		}
+		if opts.IdType != "" {
+			req.SetQueryParam("id.type", opts.IdType)
+		}
 	}
 	resp, err := req.
 		Post(fmt.Sprintf("/api/v1/clusters/%s/rotate-auth", encodeClusterServer(server)))
@@ -235,6 +245,9 @@ func (c *ClusterStandard) InvalidateCache(server string, opts *ClusterQueryOptio
 	if opts != nil {
 		if opts.Name != "" {
 			req.SetQueryParam("name", opts.Name)
+		}
+		if opts.IdType != "" {
+			req.SetQueryParam("id.type", opts.IdType)
 		}
 	}
 	resp, err := req.
