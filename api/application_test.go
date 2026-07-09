@@ -576,7 +576,7 @@ func TestApplication_NetworkError(t *testing.T) {
 	}
 	_, err = a.PatchResource(&ApplicationResourcePatchRequest{
 		ApplicationResourceRequest: ApplicationResourceRequest{Name: "myapp", Namespace: "default", ResourceName: "pod1", Version: "v1", Kind: "Pod"},
-		Patch: "{}", PatchType: "application/json",
+		Patch:                      "{}", PatchType: "application/json",
 	})
 	if err == nil {
 		t.Error("expected error")
@@ -593,7 +593,7 @@ func TestApplication_NetworkError(t *testing.T) {
 	}
 	e = a.RunResourceAction(&ApplicationResourceActionRequest{
 		ApplicationResourceRequest: ApplicationResourceRequest{Name: "myapp", Namespace: "default", ResourceName: "pod1", Version: "v1", Kind: "Pod"},
-		Action: "restart",
+		Action:                     "restart",
 	})
 	if e == nil {
 		t.Error("expected error")

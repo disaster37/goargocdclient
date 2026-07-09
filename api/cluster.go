@@ -20,27 +20,27 @@ type Cluster interface {
 type ClusterModel struct {
 	TypeMeta
 	ObjectMeta
-	Server             string           `json:"server"`
-	Name              string           `json:"name"`
-	Config            ClusterConfig    `json:"config"`
-	ConnectionState   ConnectionState  `json:"connectionState,omitempty"`
-	ServerVersion     string           `json:"serverVersion,omitempty"`
-	Namespaces        []string         `json:"namespaces,omitempty"`
-	ClusterResources  bool             `json:"clusterResources,omitempty"`
-	Project           string           `json:"project,omitempty"`
-	Labels            map[string]string `json:"labels,omitempty"`
-	Annotations       map[string]string `json:"annotations,omitempty"`
-	RefreshRequestedAt string          `json:"refreshRequestedAt,omitempty"`
-	Info              ClusterInfo      `json:"info,omitempty"`
-	Shard             *int64           `json:"shard,omitempty"`
+	Server             string            `json:"server"`
+	Name               string            `json:"name"`
+	Config             ClusterConfig     `json:"config"`
+	ConnectionState    ConnectionState   `json:"connectionState,omitempty"`
+	ServerVersion      string            `json:"serverVersion,omitempty"`
+	Namespaces         []string          `json:"namespaces,omitempty"`
+	ClusterResources   bool              `json:"clusterResources,omitempty"`
+	Project            string            `json:"project,omitempty"`
+	Labels             map[string]string `json:"labels,omitempty"`
+	Annotations        map[string]string `json:"annotations,omitempty"`
+	RefreshRequestedAt string            `json:"refreshRequestedAt,omitempty"`
+	Info               ClusterInfo       `json:"info,omitempty"`
+	Shard              *int64            `json:"shard,omitempty"`
 }
 
 type ClusterConfig struct {
-	Username          string           `json:"username,omitempty"`
-	Password          string           `json:"password,omitempty"`
-	BearerToken       string           `json:"bearerToken,omitempty"`
-	TLSClientConfig   TLSClientConfig  `json:"tlsClientConfig"`
-	AWSAuthConfig     *AWSAuthConfig   `json:"awsAuthConfig,omitempty"`
+	Username           string              `json:"username,omitempty"`
+	Password           string              `json:"password,omitempty"`
+	BearerToken        string              `json:"bearerToken,omitempty"`
+	TLSClientConfig    TLSClientConfig     `json:"tlsClientConfig"`
+	AWSAuthConfig      *AWSAuthConfig      `json:"awsAuthConfig,omitempty"`
 	ExecProviderConfig *ExecProviderConfig `json:"execProviderConfig,omitempty"`
 }
 
@@ -60,7 +60,7 @@ type AWSAuthConfig struct {
 
 type ExecProviderConfig struct {
 	Command     string            `json:"command,omitempty"`
-	Args        []string         `json:"args,omitempty"`
+	Args        []string          `json:"args,omitempty"`
 	Env         map[string]string `json:"env,omitempty"`
 	APIVersion  string            `json:"apiVersion,omitempty"`
 	InstallHint string            `json:"installHint,omitempty"`
@@ -81,9 +81,9 @@ type ClusterInfo struct {
 }
 
 type ClusterCacheInfo struct {
-	ResourcesCount     int64  `json:"resourcesCount,omitempty"`
-	APIsCount          int64  `json:"apisCount,omitempty"`
-	LastCacheSyncTime  string `json:"lastCacheSyncTime,omitempty"`
+	ResourcesCount    int64  `json:"resourcesCount,omitempty"`
+	APIsCount         int64  `json:"apisCount,omitempty"`
+	LastCacheSyncTime string `json:"lastCacheSyncTime,omitempty"`
 }
 
 type ClusterList struct {
@@ -249,14 +249,7 @@ func (c *ClusterStandard) InvalidateCache(server string, opts *ClusterQueryOptio
 }
 
 func encodeClusterServer(server string) string {
-	b := []byte(server)
-	for i, ch := range b {
-		switch ch {
-		case '/':
-			b[i] = '_'
-		}
-	}
-	return url.QueryEscape(string(b))
+	return url.PathEscape(server)
 }
 
 var _ Cluster = (*ClusterStandard)(nil)

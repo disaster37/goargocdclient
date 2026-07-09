@@ -26,6 +26,9 @@ func TestClusterList_Success(t *testing.T) {
 
 func TestClusterGet_Success(t *testing.T) {
 	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawPath == "" {
+			t.Error("expected URL Path to be encoded, but RawPath is empty")
+		}
 		jsonResponse(w, 200, ClusterModel{Name: "in-cluster", Server: "https://kubernetes.default.svc"})
 	}))
 	defer server.Close()
@@ -60,6 +63,9 @@ func TestClusterCreate_Success(t *testing.T) {
 
 func TestClusterUpdate_Success(t *testing.T) {
 	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawPath == "" {
+			t.Error("expected URL Path to be encoded, but RawPath is empty")
+		}
 		jsonResponse(w, 200, ClusterModel{Name: "updated", Server: "https://1.2.3.4"})
 	}))
 	defer server.Close()
@@ -76,6 +82,9 @@ func TestClusterUpdate_Success(t *testing.T) {
 
 func TestClusterDelete_Success(t *testing.T) {
 	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawPath == "" {
+			t.Error("expected URL Path to be encoded, but RawPath is empty")
+		}
 		w.WriteHeader(200)
 	}))
 	defer server.Close()
@@ -88,6 +97,9 @@ func TestClusterDelete_Success(t *testing.T) {
 
 func TestClusterRotateAuth_Success(t *testing.T) {
 	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawPath == "" {
+			t.Error("expected URL Path to be encoded, but RawPath is empty")
+		}
 		w.WriteHeader(200)
 	}))
 	defer server.Close()
@@ -100,6 +112,9 @@ func TestClusterRotateAuth_Success(t *testing.T) {
 
 func TestClusterInvalidateCache_Success(t *testing.T) {
 	client, server := newTestClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawPath == "" {
+			t.Error("expected URL Path to be encoded, but RawPath is empty")
+		}
 		w.WriteHeader(200)
 	}))
 	defer server.Close()
@@ -228,5 +243,23 @@ func TestCluster_NetworkError(t *testing.T) {
 	}
 	if err = c.InvalidateCache("https://kubernetes.default.svc", nil); err == nil {
 		t.Error("expected error")
+	}
+}
+
+func TestEncodeClusterServer(t *testing.T) {
+	cases := []struct {
+		in   string
+		want string
+	}{
+		{"https://kubernetes.default.svc", "https:%2F%2Fkubernetes.default.svc"},
+		{"https://example.com:6443", "https:%2F%2Fexample.com:6443"},
+		{"plain-string", "plain-string"},
+		{"user@host/path", "user@host%2Fpath"},
+	}
+	for _, tc := range cases {
+		got := encodeClusterServer(tc.in)
+		if got != tc.want {
+			t.Errorf("encodeClusterServer(%q) = %q, want %q", tc.in, got, tc.want)
+		}
 	}
 }

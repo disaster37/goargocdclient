@@ -30,23 +30,23 @@ type Repository interface {
 type RepositoryModel struct {
 	TypeMeta
 	ObjectMeta
-	Repo                string          `json:"repo"`
-	Username            string          `json:"username,omitempty"`
-	Password            string          `json:"password,omitempty"`
-	SSHPrivateKey       string          `json:"sshPrivateKey,omitempty"`
-	Insecure            bool            `json:"insecure,omitempty"`
-	EnableLFS           bool            `json:"enableLfs,omitempty"`
-	EnableOCI           bool            `json:"enableOCI,omitempty"`
-	Type                string          `json:"type,omitempty"`
-	Name                string          `json:"name,omitempty"`
-	Project             string          `json:"project,omitempty"`
-	InheritedCreds      bool            `json:"inheritedCreds,omitempty"`
-	TLSClientCertData   string          `json:"tlsClientCertData,omitempty"`
-	TLSClientCertKey    string          `json:"tlsClientCertKey,omitempty"`
-	GCPServiceAccountKey string         `json:"gcpServiceAccountKey,omitempty"`
-	Proxy               string          `json:"proxy,omitempty"`
-	ForceHTTPBasicAuth  bool            `json:"forceHttpBasicAuth,omitempty"`
-	ConnectionState     ConnectionState `json:"connectionState,omitempty"`
+	Repo                 string          `json:"repo"`
+	Username             string          `json:"username,omitempty"`
+	Password             string          `json:"password,omitempty"`
+	SSHPrivateKey        string          `json:"sshPrivateKey,omitempty"`
+	Insecure             bool            `json:"insecure,omitempty"`
+	EnableLFS            bool            `json:"enableLfs,omitempty"`
+	EnableOCI            bool            `json:"enableOCI,omitempty"`
+	Type                 string          `json:"type,omitempty"`
+	Name                 string          `json:"name,omitempty"`
+	Project              string          `json:"project,omitempty"`
+	InheritedCreds       bool            `json:"inheritedCreds,omitempty"`
+	TLSClientCertData    string          `json:"tlsClientCertData,omitempty"`
+	TLSClientCertKey     string          `json:"tlsClientCertKey,omitempty"`
+	GCPServiceAccountKey string          `json:"gcpServiceAccountKey,omitempty"`
+	Proxy                string          `json:"proxy,omitempty"`
+	ForceHTTPBasicAuth   bool            `json:"forceHttpBasicAuth,omitempty"`
+	ConnectionState      ConnectionState `json:"connectionState,omitempty"`
 }
 
 type RepositoryList struct {
@@ -75,13 +75,13 @@ type RepoAppDetailsQuery struct {
 }
 
 type RepoAppDetails struct {
-	Type        string            `json:"type"`
-	Path        string            `json:"path"`
-	Kustomize   *KustomizeAppSpec `json:"kustomize,omitempty"`
-	Directory   *DirectoryAppSpec `json:"directory,omitempty"`
-	Helm        *HelmAppSpec      `json:"helm,omitempty"`
-	Plugin      *PluginAppSpec    `json:"plugin,omitempty"`
-	Parameters  map[string]string `json:"parameters,omitempty"`
+	Type       string            `json:"type"`
+	Path       string            `json:"path"`
+	Kustomize  *KustomizeAppSpec `json:"kustomize,omitempty"`
+	Directory  *DirectoryAppSpec `json:"directory,omitempty"`
+	Helm       *HelmAppSpec      `json:"helm,omitempty"`
+	Plugin     *PluginAppSpec    `json:"plugin,omitempty"`
+	Parameters map[string]string `json:"parameters,omitempty"`
 }
 
 type KustomizeAppSpec struct {
@@ -93,11 +93,11 @@ type DirectoryAppSpec struct {
 }
 
 type HelmAppSpec struct {
-	Name          string               `json:"name,omitempty"`
-	ValueFiles    []string             `json:"valueFiles,omitempty"`
-	Parameters    []HelmParameter      `json:"parameters,omitempty"`
+	Name           string              `json:"name,omitempty"`
+	ValueFiles     []string            `json:"valueFiles,omitempty"`
+	Parameters     []HelmParameter     `json:"parameters,omitempty"`
 	FileParameters []HelmFileParameter `json:"fileParameters,omitempty"`
-	Values        string               `json:"values,omitempty"`
+	Values         string              `json:"values,omitempty"`
 }
 
 type PluginAppSpec struct {
@@ -127,25 +127,25 @@ type OCITagsResponse struct {
 }
 
 type RepoAccessQuery struct {
-	Repo                          string `json:"repo"`
-	Username                      string `json:"username,omitempty"`
-	Password                      string `json:"password,omitempty"`
-	SSHPrivateKey                 string `json:"sshPrivateKey,omitempty"`
-	TLSClientCertData             string `json:"tlsClientCertData,omitempty"`
-	TLSClientCertKey              string `json:"tlsClientCertKey,omitempty"`
-	Type                          string `json:"type,omitempty"`
-	Name                          string `json:"name,omitempty"`
-	Insecure                      bool   `json:"insecure,omitempty"`
-	EnableOCI                     bool   `json:"enableOCI,omitempty"`
-	Proxy                         string `json:"proxy,omitempty"`
-	ForceHTTPBasicAuth            bool   `json:"forceHttpBasicAuth,omitempty"`
-	GitHubAppPrivateKey           string `json:"githubAppPrivateKey,omitempty"`
-	GitHubAppID                   int64  `json:"githubAppID,omitempty"`
-	GitHubAppInstallationID       int64  `json:"githubAppInstallationID,omitempty"`
-	GitHubAppEnterpriseBaseUrl    string `json:"githubAppEnterpriseBaseUrl,omitempty"`
-	GCPServiceAccountKey          string `json:"gcpServiceAccountKey,omitempty"`
-	BearerToken                   string `json:"bearerToken,omitempty"`
-	InsecureOCIForceHttp          bool   `json:"insecureOCIForceHttp,omitempty"`
+	Repo                              string `json:"repo"`
+	Username                          string `json:"username,omitempty"`
+	Password                          string `json:"password,omitempty"`
+	SSHPrivateKey                     string `json:"sshPrivateKey,omitempty"`
+	TLSClientCertData                 string `json:"tlsClientCertData,omitempty"`
+	TLSClientCertKey                  string `json:"tlsClientCertKey,omitempty"`
+	Type                              string `json:"type,omitempty"`
+	Name                              string `json:"name,omitempty"`
+	Insecure                          bool   `json:"insecure,omitempty"`
+	EnableOCI                         bool   `json:"enableOCI,omitempty"`
+	Proxy                             string `json:"proxy,omitempty"`
+	ForceHTTPBasicAuth                bool   `json:"forceHttpBasicAuth,omitempty"`
+	GitHubAppPrivateKey               string `json:"githubAppPrivateKey,omitempty"`
+	GitHubAppID                       int64  `json:"githubAppID,omitempty"`
+	GitHubAppInstallationID           int64  `json:"githubAppInstallationID,omitempty"`
+	GitHubAppEnterpriseBaseUrl        string `json:"githubAppEnterpriseBaseUrl,omitempty"`
+	GCPServiceAccountKey              string `json:"gcpServiceAccountKey,omitempty"`
+	BearerToken                       string `json:"bearerToken,omitempty"`
+	InsecureOCIForceHttp              bool   `json:"insecureOCIForceHttp,omitempty"`
 	AzureServicePrincipalClientId     string `json:"azureServicePrincipalClientId,omitempty"`
 	AzureServicePrincipalClientSecret string `json:"azureServicePrincipalClientSecret,omitempty"`
 	AzureServicePrincipalTenantId     string `json:"azureServicePrincipalTenantId,omitempty"`

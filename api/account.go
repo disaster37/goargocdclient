@@ -16,9 +16,9 @@ type Account interface {
 }
 
 type AccountDetail struct {
-	Name      string   `json:"name"`
-	Capabilities []string `json:"capabilities"`
-	Tokens    []TokenInfo `json:"tokens,omitempty"`
+	Name         string      `json:"name"`
+	Capabilities []string    `json:"capabilities"`
+	Tokens       []TokenInfo `json:"tokens,omitempty"`
 }
 
 type TokenInfo struct {

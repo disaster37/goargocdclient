@@ -48,26 +48,26 @@ type ApplicationModel struct {
 }
 
 type ApplicationSpec struct {
-	Source              *ApplicationSource           `json:"source,omitempty"`
-	Sources             []ApplicationSource           `json:"sources,omitempty"`
-	Destination         ApplicationDestination        `json:"destination"`
-	Project             string                        `json:"project"`
-	SyncPolicy          *SyncPolicy                   `json:"syncPolicy,omitempty"`
-	IgnoreDifferences   []ResourceIgnoreDifferences   `json:"ignoreDifferences,omitempty"`
-	Info                []Info                        `json:"info,omitempty"`
-	RevisionHistoryLimit *int64                       `json:"revisionHistoryLimit,omitempty"`
+	Source               *ApplicationSource          `json:"source,omitempty"`
+	Sources              []ApplicationSource         `json:"sources,omitempty"`
+	Destination          ApplicationDestination      `json:"destination"`
+	Project              string                      `json:"project"`
+	SyncPolicy           *SyncPolicy                 `json:"syncPolicy,omitempty"`
+	IgnoreDifferences    []ResourceIgnoreDifferences `json:"ignoreDifferences,omitempty"`
+	Info                 []Info                      `json:"info,omitempty"`
+	RevisionHistoryLimit *int64                      `json:"revisionHistoryLimit,omitempty"`
 }
 
 type ApplicationSource struct {
-	RepoURL        string                  `json:"repoURL"`
-	Path           string                  `json:"path,omitempty"`
-	TargetRevision string                  `json:"targetRevision,omitempty"`
-	Helm           *ApplicationSourceHelm  `json:"helm,omitempty"`
+	RepoURL        string                      `json:"repoURL"`
+	Path           string                      `json:"path,omitempty"`
+	TargetRevision string                      `json:"targetRevision,omitempty"`
+	Helm           *ApplicationSourceHelm      `json:"helm,omitempty"`
 	Kustomize      *ApplicationSourceKustomize `json:"kustomize,omitempty"`
 	Directory      *ApplicationSourceDirectory `json:"directory,omitempty"`
-	Plugin         *ApplicationSourcePlugin `json:"plugin,omitempty"`
-	Chart          string                  `json:"chart,omitempty"`
-	Ref            string                  `json:"ref,omitempty"`
+	Plugin         *ApplicationSourcePlugin    `json:"plugin,omitempty"`
+	Chart          string                      `json:"chart,omitempty"`
+	Ref            string                      `json:"ref,omitempty"`
 }
 
 type ApplicationSourceHelm struct {
@@ -146,10 +146,10 @@ type ApplicationDestination struct {
 }
 
 type SyncPolicy struct {
-	Automated                 *SyncPolicyAutomated      `json:"automated,omitempty"`
-	SyncOptions               []string                  `json:"syncOptions,omitempty"`
-	Retry                     *RetryStrategy            `json:"retry,omitempty"`
-	ManagedNamespaceMetadata  *ManagedNamespaceMetadata `json:"managedNamespaceMetadata,omitempty"`
+	Automated                *SyncPolicyAutomated      `json:"automated,omitempty"`
+	SyncOptions              []string                  `json:"syncOptions,omitempty"`
+	Retry                    *RetryStrategy            `json:"retry,omitempty"`
+	ManagedNamespaceMetadata *ManagedNamespaceMetadata `json:"managedNamespaceMetadata,omitempty"`
 }
 
 type SyncPolicyAutomated struct {
@@ -175,12 +175,12 @@ type ManagedNamespaceMetadata struct {
 }
 
 type ResourceIgnoreDifferences struct {
-	Group                string   `json:"group,omitempty"`
-	Kind                 string   `json:"kind"`
-	Name                 string   `json:"name,omitempty"`
-	Namespace            string   `json:"namespace,omitempty"`
-	JSONPointers         []string `json:"jsonPointers,omitempty"`
-	JQPathExpressions    []string `json:"jqPathExpressions,omitempty"`
+	Group                 string   `json:"group,omitempty"`
+	Kind                  string   `json:"kind"`
+	Name                  string   `json:"name,omitempty"`
+	Namespace             string   `json:"namespace,omitempty"`
+	JSONPointers          []string `json:"jsonPointers,omitempty"`
+	JQPathExpressions     []string `json:"jqPathExpressions,omitempty"`
 	ManagedFieldsManagers []string `json:"managedFieldsManagers,omitempty"`
 }
 
@@ -190,30 +190,30 @@ type Info struct {
 }
 
 type ApplicationStatus struct {
-	Resources            []ResourceStatus    `json:"resources,omitempty"`
-	Sync                 SyncStatus           `json:"sync,omitempty"`
-	Health               HealthStatus         `json:"health,omitempty"`
-	History              []RevisionHistory    `json:"history,omitempty"`
+	Resources            []ResourceStatus       `json:"resources,omitempty"`
+	Sync                 SyncStatus             `json:"sync,omitempty"`
+	Health               HealthStatus           `json:"health,omitempty"`
+	History              []RevisionHistory      `json:"history,omitempty"`
 	Conditions           []ApplicationCondition `json:"conditions,omitempty"`
-	ReconciledAt         string               `json:"reconciledAt,omitempty"`
-	OperationState       *OperationState      `json:"operationState,omitempty"`
-	ObservedAt           string               `json:"observedAt,omitempty"`
-	SourceType           ApplicationSourceType `json:"sourceType,omitempty"`
-	Summary              *ApplicationSummary  `json:"summary,omitempty"`
-	ResourceHealthSource string               `json:"resourceHealthSource,omitempty"`
+	ReconciledAt         string                 `json:"reconciledAt,omitempty"`
+	OperationState       *OperationState        `json:"operationState,omitempty"`
+	ObservedAt           string                 `json:"observedAt,omitempty"`
+	SourceType           ApplicationSourceType  `json:"sourceType,omitempty"`
+	Summary              *ApplicationSummary    `json:"summary,omitempty"`
+	ResourceHealthSource string                 `json:"resourceHealthSource,omitempty"`
 }
 
 type ResourceStatus struct {
-	Group           string        `json:"group,omitempty"`
-	Version         string        `json:"version"`
-	Kind            string        `json:"kind"`
-	Namespace       string        `json:"namespace"`
-	Name            string        `json:"name"`
+	Group           string         `json:"group,omitempty"`
+	Version         string         `json:"version"`
+	Kind            string         `json:"kind"`
+	Namespace       string         `json:"namespace"`
+	Name            string         `json:"name"`
 	Status          SyncStatusCode `json:"status,omitempty"`
 	Health          *HealthStatus  `json:"health,omitempty"`
-	Hook            bool          `json:"hook,omitempty"`
-	RequiresPruning bool          `json:"requiresPruning,omitempty"`
-	SyncWave        int64         `json:"syncWave,omitempty"`
+	Hook            bool           `json:"hook,omitempty"`
+	RequiresPruning bool           `json:"requiresPruning,omitempty"`
+	SyncWave        int64          `json:"syncWave,omitempty"`
 }
 
 type SyncStatus struct {
@@ -254,11 +254,11 @@ const (
 )
 
 type RevisionHistory struct {
-	Revision        string           `json:"revision"`
-	DeployedAt      string           `json:"deployedAt"`
-	ID              int64            `json:"id"`
+	Revision        string            `json:"revision"`
+	DeployedAt      string            `json:"deployedAt"`
+	ID              int64             `json:"id"`
 	Source          ApplicationSource `json:"source,omitempty"`
-	DeployStartedAt string           `json:"deployStartedAt,omitempty"`
+	DeployStartedAt string            `json:"deployStartedAt,omitempty"`
 }
 
 type ApplicationCondition struct {
@@ -268,18 +268,18 @@ type ApplicationCondition struct {
 }
 
 type OperationState struct {
-	Operation  Operation              `json:"operation"`
-	Phase      OperationPhase         `json:"phase"`
-	Message    string                 `json:"message,omitempty"`
-	SyncResult *SyncOperationResult   `json:"syncResult,omitempty"`
-	StartedAt  string                 `json:"startedAt"`
-	FinishedAt string                 `json:"finishedAt,omitempty"`
+	Operation  Operation            `json:"operation"`
+	Phase      OperationPhase       `json:"phase"`
+	Message    string               `json:"message,omitempty"`
+	SyncResult *SyncOperationResult `json:"syncResult,omitempty"`
+	StartedAt  string               `json:"startedAt"`
+	FinishedAt string               `json:"finishedAt,omitempty"`
 }
 
 type Operation struct {
-	Sync       *SyncOperation      `json:"sync,omitempty"`
-	InitiatedBy OperationInitiator  `json:"initiatedBy,omitempty"`
-	Info       []*Info             `json:"info,omitempty"`
+	Sync        *SyncOperation     `json:"sync,omitempty"`
+	InitiatedBy OperationInitiator `json:"initiatedBy,omitempty"`
+	Info        []*Info            `json:"info,omitempty"`
 }
 
 type SyncOperation struct {
@@ -338,15 +338,15 @@ type SyncOperationResult struct {
 }
 
 type ResourceResult struct {
-	Group     string        `json:"group"`
-	Version   string        `json:"version"`
-	Namespace string        `json:"namespace"`
-	Name      string        `json:"name"`
-	Status    ResultCode    `json:"status,omitempty"`
-	Message   string        `json:"message,omitempty"`
-	HookType  string        `json:"hookType,omitempty"`
+	Group     string         `json:"group"`
+	Version   string         `json:"version"`
+	Namespace string         `json:"namespace"`
+	Name      string         `json:"name"`
+	Status    ResultCode     `json:"status,omitempty"`
+	Message   string         `json:"message,omitempty"`
+	HookType  string         `json:"hookType,omitempty"`
 	HookPhase OperationPhase `json:"hookPhase,omitempty"`
-	SyncPhase string        `json:"syncPhase,omitempty"`
+	SyncPhase string         `json:"syncPhase,omitempty"`
 }
 
 type ResultCode string
@@ -401,11 +401,11 @@ type SyncOptions struct {
 }
 
 type RollbackOptions struct {
-	ID          int64  `json:"id"`
-	DryRun      bool   `json:"dryRun,omitempty"`
-	Prune       bool   `json:"prune,omitempty"`
+	ID           int64  `json:"id"`
+	DryRun       bool   `json:"dryRun,omitempty"`
+	Prune        bool   `json:"prune,omitempty"`
 	AppNamespace string `json:"appNamespace,omitempty"`
-	Project     string `json:"project,omitempty"`
+	Project      string `json:"project,omitempty"`
 }
 
 type ApplicationResourceRequest struct {
@@ -440,9 +440,9 @@ type ResourceActionsList struct {
 }
 
 type ResourceAction struct {
-	Name     string              `json:"name"`
+	Name     string                `json:"name"`
 	Params   []ResourceActionParam `json:"params,omitempty"`
-	Disabled bool                `json:"disabled,omitempty"`
+	Disabled bool                  `json:"disabled,omitempty"`
 }
 
 type ResourceActionParam struct {
@@ -458,12 +458,12 @@ type ApplicationResourceActionRequest struct {
 }
 
 type ApplicationManifestQuery struct {
-	Revision       string   `json:"revision,omitempty"`
-	AppNamespace   string   `json:"namespace,omitempty"`
-	Project        string   `json:"project,omitempty"`
-	SourcePositions []int64 `json:"sourcePositions,omitempty"`
-	Revisions      []string `json:"revisions,omitempty"`
-	NoCache        *bool    `json:"noCache,omitempty"`
+	Revision        string   `json:"revision,omitempty"`
+	AppNamespace    string   `json:"namespace,omitempty"`
+	Project         string   `json:"project,omitempty"`
+	SourcePositions []int64  `json:"sourcePositions,omitempty"`
+	Revisions       []string `json:"revisions,omitempty"`
+	NoCache         *bool    `json:"noCache,omitempty"`
 }
 
 type ManifestResponse struct {
@@ -494,11 +494,11 @@ type ResourceNode struct {
 }
 
 type ResourceNetworkingInfo struct {
-	TargetLabels map[string]string       `json:"targetLabels,omitempty"`
-	TargetRefs   []ResourceRef           `json:"targetRefs,omitempty"`
-	Labels       map[string]string       `json:"labels,omitempty"`
-	Ingress      []LoadBalancerIngress   `json:"ingress,omitempty"`
-	ExternalURLs []string                `json:"externalURLs,omitempty"`
+	TargetLabels map[string]string     `json:"targetLabels,omitempty"`
+	TargetRefs   []ResourceRef         `json:"targetRefs,omitempty"`
+	Labels       map[string]string     `json:"labels,omitempty"`
+	Ingress      []LoadBalancerIngress `json:"ingress,omitempty"`
+	ExternalURLs []string              `json:"externalURLs,omitempty"`
 }
 
 type ResourceRef struct {
@@ -732,17 +732,35 @@ func (a *ApplicationStandard) List(opts *ApplicationListOptions) (*ApplicationLi
 	req := a.client.R().SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Refresh != "" { params["refresh"] = opts.Refresh }
-		if opts.ResourceVersion != "" { params["resourceVersion"] = opts.ResourceVersion }
-		if opts.Selector != "" { params["selector"] = opts.Selector }
-		if opts.Repo != "" { params["repo"] = opts.Repo }
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
-		for _, p := range opts.Project { req = req.SetQueryParam("project", p) }
+		if opts.Refresh != "" {
+			params["refresh"] = opts.Refresh
+		}
+		if opts.ResourceVersion != "" {
+			params["resourceVersion"] = opts.ResourceVersion
+		}
+		if opts.Selector != "" {
+			params["selector"] = opts.Selector
+		}
+		if opts.Repo != "" {
+			params["repo"] = opts.Repo
+		}
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
+		for _, p := range opts.Project {
+			req = req.SetQueryParam("project", p)
+		}
 	}
 	resp, err := req.Get("/api/v1/applications")
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -751,17 +769,35 @@ func (a *ApplicationStandard) Get(name string, opts *ApplicationGetOptions) (*Ap
 	req := a.client.R().SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Refresh != "" { params["refresh"] = opts.Refresh }
-		if opts.ResourceVersion != "" { params["resourceVersion"] = opts.ResourceVersion }
-		if opts.Selector != "" { params["selector"] = opts.Selector }
-		if opts.Repo != "" { params["repo"] = opts.Repo }
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
-		for _, p := range opts.Project { req = req.SetQueryParam("project", p) }
+		if opts.Refresh != "" {
+			params["refresh"] = opts.Refresh
+		}
+		if opts.ResourceVersion != "" {
+			params["resourceVersion"] = opts.ResourceVersion
+		}
+		if opts.Selector != "" {
+			params["selector"] = opts.Selector
+		}
+		if opts.Repo != "" {
+			params["repo"] = opts.Repo
+		}
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
+		for _, p := range opts.Project {
+			req = req.SetQueryParam("project", p)
+		}
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s", name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -770,13 +806,23 @@ func (a *ApplicationStandard) Create(app *ApplicationModel, opts *ApplicationCre
 	req := a.client.R().SetBody(app).SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Upsert != nil { params["upsert"] = fmt.Sprintf("%v", *opts.Upsert) }
-		if opts.Validate != nil { params["validate"] = fmt.Sprintf("%v", *opts.Validate) }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.Upsert != nil {
+			params["upsert"] = fmt.Sprintf("%v", *opts.Upsert)
+		}
+		if opts.Validate != nil {
+			params["validate"] = fmt.Sprintf("%v", *opts.Validate)
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Post("/api/v1/applications")
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -785,13 +831,23 @@ func (a *ApplicationStandard) Update(app *ApplicationModel, opts *ApplicationUpd
 	req := a.client.R().SetBody(app).SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Validate != nil { params["validate"] = fmt.Sprintf("%v", *opts.Validate) }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.Validate != nil {
+			params["validate"] = fmt.Sprintf("%v", *opts.Validate)
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Put(fmt.Sprintf("/api/v1/applications/%s", app.Name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -805,31 +861,47 @@ func (a *ApplicationStandard) Delete(name string, opts *ApplicationDeleteOptions
 		if opts.PropagationPolicy != "" {
 			params["propagationPolicy"] = opts.PropagationPolicy
 		}
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
 		if len(params) > 0 {
 			req = req.SetQueryParams(params)
 		}
 	}
 	resp, err := req.Delete(fmt.Sprintf("/api/v1/applications/%s", name))
-	if err != nil { return err }
-	if resp.IsError() { return parseError(resp) }
+	if err != nil {
+		return err
+	}
+	if resp.IsError() {
+		return parseError(resp)
+	}
 	return nil
 }
 
 func (a *ApplicationStandard) Sync(name string, opts *SyncOptions) error {
 	req := a.client.R().SetBody(opts)
 	resp, err := req.Post(fmt.Sprintf("/api/v1/applications/%s/sync", name))
-	if err != nil { return err }
-	if resp.IsError() { return parseError(resp) }
+	if err != nil {
+		return err
+	}
+	if resp.IsError() {
+		return parseError(resp)
+	}
 	return nil
 }
 
 func (a *ApplicationStandard) Rollback(name string, opts *RollbackOptions) error {
 	req := a.client.R().SetBody(opts)
 	resp, err := req.Post(fmt.Sprintf("/api/v1/applications/%s/rollback", name))
-	if err != nil { return err }
-	if resp.IsError() { return parseError(resp) }
+	if err != nil {
+		return err
+	}
+	if resp.IsError() {
+		return parseError(resp)
+	}
 	return nil
 }
 
@@ -837,13 +909,23 @@ func (a *ApplicationStandard) TerminateOperation(name string, opts *TerminateOpe
 	req := a.client.R()
 	if opts != nil {
 		params := map[string]string{}
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Delete(fmt.Sprintf("/api/v1/applications/%s/operation", name))
-	if err != nil { return err }
-	if resp.IsError() { return parseError(resp) }
+	if err != nil {
+		return err
+	}
+	if resp.IsError() {
+		return parseError(resp)
+	}
 	return nil
 }
 
@@ -856,13 +938,23 @@ func (a *ApplicationStandard) Patch(name string, patch any, patchType string, op
 	}
 	if opts != nil {
 		params := map[string]string{}
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Patch(fmt.Sprintf("/api/v1/applications/%s", name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -872,8 +964,12 @@ func (a *ApplicationStandard) GetResource(opts *ApplicationResourceRequest) (*Ap
 		SetBody(opts).
 		SetResult(&result).
 		Post(fmt.Sprintf("/api/v1/applications/%s/resource", opts.Name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -883,8 +979,12 @@ func (a *ApplicationStandard) PatchResource(opts *ApplicationResourcePatchReques
 		SetBody(opts).
 		SetResult(&result).
 		Post(fmt.Sprintf("/api/v1/applications/%s/resource", opts.Name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -905,8 +1005,12 @@ func (a *ApplicationStandard) DeleteResource(opts *ApplicationResourceDeleteRequ
 		req = req.SetQueryParam("orphan", fmt.Sprintf("%v", *opts.Orphan))
 	}
 	resp, err := req.Delete(fmt.Sprintf("/api/v1/applications/%s/resource", opts.Name))
-	if err != nil { return err }
-	if resp.IsError() { return parseError(resp) }
+	if err != nil {
+		return err
+	}
+	if resp.IsError() {
+		return parseError(resp)
+	}
 	return nil
 }
 
@@ -916,8 +1020,12 @@ func (a *ApplicationStandard) ListResourceActions(opts *ApplicationResourceReque
 		SetBody(opts).
 		SetResult(&result).
 		Post(fmt.Sprintf("/api/v1/applications/%s/resource/actions", opts.Name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -925,8 +1033,12 @@ func (a *ApplicationStandard) RunResourceAction(opts *ApplicationResourceActionR
 	resp, err := a.client.R().
 		SetBody(opts).
 		Post(fmt.Sprintf("/api/v1/applications/%s/resource/actions", opts.Name))
-	if err != nil { return err }
-	if resp.IsError() { return parseError(resp) }
+	if err != nil {
+		return err
+	}
+	if resp.IsError() {
+		return parseError(resp)
+	}
 	return nil
 }
 
@@ -935,17 +1047,35 @@ func (a *ApplicationStandard) GetManifests(name string, opts *ApplicationManifes
 	req := a.client.R().SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Revision != "" { params["revision"] = opts.Revision }
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if opts.NoCache != nil { params["noCache"] = fmt.Sprintf("%v", *opts.NoCache) }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
-		for _, v := range opts.SourcePositions { req = req.SetQueryParam("sourcePositions", fmt.Sprintf("%d", v)) }
-		for _, v := range opts.Revisions { req = req.SetQueryParam("revisions", v) }
+		if opts.Revision != "" {
+			params["revision"] = opts.Revision
+		}
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if opts.NoCache != nil {
+			params["noCache"] = fmt.Sprintf("%v", *opts.NoCache)
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
+		for _, v := range opts.SourcePositions {
+			req = req.SetQueryParam("sourcePositions", fmt.Sprintf("%d", v))
+		}
+		for _, v := range opts.Revisions {
+			req = req.SetQueryParam("revisions", v)
+		}
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s/manifests", name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -954,18 +1084,38 @@ func (a *ApplicationStandard) ResourceTree(name string, opts *ResourcesQuery) (*
 	req := a.client.R().SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Namespace != "" { params["namespace"] = opts.Namespace }
-		if opts.Name != "" { params["name"] = opts.Name }
-		if opts.Version != "" { params["version"] = opts.Version }
-		if opts.Group != "" { params["group"] = opts.Group }
-		if opts.Kind != "" { params["kind"] = opts.Kind }
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.Namespace != "" {
+			params["namespace"] = opts.Namespace
+		}
+		if opts.Name != "" {
+			params["name"] = opts.Name
+		}
+		if opts.Version != "" {
+			params["version"] = opts.Version
+		}
+		if opts.Group != "" {
+			params["group"] = opts.Group
+		}
+		if opts.Kind != "" {
+			params["kind"] = opts.Kind
+		}
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s/resource-tree", name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -974,18 +1124,38 @@ func (a *ApplicationStandard) ManagedResources(name string, opts *ResourcesQuery
 	req := a.client.R().SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Namespace != "" { params["namespace"] = opts.Namespace }
-		if opts.Name != "" { params["name"] = opts.Name }
-		if opts.Version != "" { params["version"] = opts.Version }
-		if opts.Group != "" { params["group"] = opts.Group }
-		if opts.Kind != "" { params["kind"] = opts.Kind }
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.Namespace != "" {
+			params["namespace"] = opts.Namespace
+		}
+		if opts.Name != "" {
+			params["name"] = opts.Name
+		}
+		if opts.Version != "" {
+			params["version"] = opts.Version
+		}
+		if opts.Group != "" {
+			params["group"] = opts.Group
+		}
+		if opts.Kind != "" {
+			params["kind"] = opts.Kind
+		}
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s/managed-resources", name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -994,15 +1164,29 @@ func (a *ApplicationStandard) RevisionMetadata(name, revision string, opts *Revi
 	req := a.client.R().SetResult(&result).SetQueryParam("revision", revision)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if opts.SourceIndex != nil { params["sourceIndex"] = fmt.Sprintf("%d", *opts.SourceIndex) }
-		if opts.VersionId != nil { params["versionId"] = fmt.Sprintf("%d", *opts.VersionId) }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if opts.SourceIndex != nil {
+			params["sourceIndex"] = fmt.Sprintf("%d", *opts.SourceIndex)
+		}
+		if opts.VersionId != nil {
+			params["versionId"] = fmt.Sprintf("%d", *opts.VersionId)
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s/revision-metadata", name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -1011,13 +1195,23 @@ func (a *ApplicationStandard) GetSyncWindows(name string, opts *SyncWindowsOptio
 	req := a.client.R().SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s/syncwindows", name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -1026,16 +1220,32 @@ func (a *ApplicationStandard) ListResourceEvents(name string, opts *ApplicationR
 	req := a.client.R().SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.ResourceName != "" { params["resourceName"] = opts.ResourceName }
-		if opts.ResourceUID != "" { params["resourceUID"] = opts.ResourceUID }
-		if opts.ResourceNamespace != "" { params["resourceNamespace"] = opts.ResourceNamespace }
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.ResourceName != "" {
+			params["resourceName"] = opts.ResourceName
+		}
+		if opts.ResourceUID != "" {
+			params["resourceUID"] = opts.ResourceUID
+		}
+		if opts.ResourceNamespace != "" {
+			params["resourceNamespace"] = opts.ResourceNamespace
+		}
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s/events", name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -1044,13 +1254,23 @@ func (a *ApplicationStandard) ListLinks(name string, opts *ListLinksOptions) (*L
 	req := a.client.R().SetResult(&result)
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Namespace != "" { params["namespace"] = opts.Namespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.Namespace != "" {
+			params["namespace"] = opts.Namespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s/links", name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -1060,8 +1280,12 @@ func (a *ApplicationStandard) ListResourceLinks(opts *ApplicationResourceRequest
 		SetBody(opts).
 		SetResult(&result).
 		Post(fmt.Sprintf("/api/v1/applications/%s/resource/links", opts.Name))
-	if err != nil { return nil, err }
-	if resp.IsError() { return nil, parseError(resp) }
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, parseError(resp)
+	}
 	return &result, nil
 }
 
@@ -1072,16 +1296,32 @@ func (a *ApplicationStandard) Watch(ctx context.Context, opts *WatchOptions) (<-
 		SetHeader("Accept", "text/event-stream")
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Revision != "" { params["revision"] = opts.Revision }
-		if opts.ResourceVersion != "" { params["resourceVersion"] = opts.ResourceVersion }
-		if opts.Selector != "" { params["selector"] = opts.Selector }
-		if opts.Repo != "" { params["repo"] = opts.Repo }
-		if opts.Refresh != "" { params["refresh"] = opts.Refresh }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
-		for _, p := range opts.Project { req = req.SetQueryParam("project", p) }
+		if opts.Revision != "" {
+			params["revision"] = opts.Revision
+		}
+		if opts.ResourceVersion != "" {
+			params["resourceVersion"] = opts.ResourceVersion
+		}
+		if opts.Selector != "" {
+			params["selector"] = opts.Selector
+		}
+		if opts.Repo != "" {
+			params["repo"] = opts.Repo
+		}
+		if opts.Refresh != "" {
+			params["refresh"] = opts.Refresh
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
+		for _, p := range opts.Project {
+			req = req.SetQueryParam("project", p)
+		}
 	}
 	resp, err := req.Get("/api/v1/stream/applications")
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	if resp.StatusCode() >= 400 {
 		body, _ := io.ReadAll(resp.RawBody())
 		resp.RawBody().Close()
@@ -1102,17 +1342,35 @@ func (a *ApplicationStandard) WatchResourceTree(ctx context.Context, name string
 		SetHeader("Accept", "text/event-stream")
 	if opts != nil {
 		params := map[string]string{}
-		if opts.Namespace != "" { params["namespace"] = opts.Namespace }
-		if opts.Name != "" { params["name"] = opts.Name }
-		if opts.Version != "" { params["version"] = opts.Version }
-		if opts.Group != "" { params["group"] = opts.Group }
-		if opts.Kind != "" { params["kind"] = opts.Kind }
-		if opts.AppNamespace != "" { params["appNamespace"] = opts.AppNamespace }
-		if opts.Project != "" { params["project"] = opts.Project }
-		if len(params) > 0 { req = req.SetQueryParams(params) }
+		if opts.Namespace != "" {
+			params["namespace"] = opts.Namespace
+		}
+		if opts.Name != "" {
+			params["name"] = opts.Name
+		}
+		if opts.Version != "" {
+			params["version"] = opts.Version
+		}
+		if opts.Group != "" {
+			params["group"] = opts.Group
+		}
+		if opts.Kind != "" {
+			params["kind"] = opts.Kind
+		}
+		if opts.AppNamespace != "" {
+			params["appNamespace"] = opts.AppNamespace
+		}
+		if opts.Project != "" {
+			params["project"] = opts.Project
+		}
+		if len(params) > 0 {
+			req = req.SetQueryParams(params)
+		}
 	}
 	resp, err := req.Get(fmt.Sprintf("/api/v1/stream/applications/%s/resource-tree", name))
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	if resp.StatusCode() >= 400 {
 		body, _ := io.ReadAll(resp.RawBody())
 		resp.RawBody().Close()
@@ -1176,7 +1434,9 @@ func (a *ApplicationStandard) PodLogs(ctx context.Context, opts *PodLogsOptions)
 	}
 	req = req.SetQueryParams(params)
 	resp, err := req.Get(fmt.Sprintf("/api/v1/applications/%s/pod-logs", opts.Name))
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	if resp.StatusCode() >= 400 {
 		body, _ := io.ReadAll(resp.RawBody())
 		resp.RawBody().Close()

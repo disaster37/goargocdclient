@@ -8,20 +8,20 @@ type Settings interface {
 }
 
 type SettingsModel struct {
-	URL                        string                 `json:"url"`
-	AppLabelKey                string                 `json:"appLabelKey"`
-	ControllerNamespace        string                 `json:"controllerNamespace"`
-	ExecEnabled                *bool                  `json:"execEnabled,omitempty"`
-	ConfigManagementPlugins    []ConfigManagementPlugin `json:"configManagementPlugins,omitempty"`
-	KustomizeOptions           *KustomizeOptions      `json:"kustomizeOptions,omitempty"`
-	StatusBadge                string                 `json:"statusBadge,omitempty"`
-	StatusBadgeRootURL         string                 `json:"statusBadgeRootUrl,omitempty"`
-	UserLoginsDisabled         bool                   `json:"userLoginsDisabled"`
-	PasswordPattern            string                 `json:"passwordPattern,omitempty"`
-	TrackingMethod             string                 `json:"trackingMethod,omitempty"`
-	GoogleAnalytics            *GoogleAnalyticsConfig `json:"googleAnalytics,omitempty"`
-	Plugins                    []Plugin               `json:"plugins,omitempty"`
-	Help                       *Help                  `json:"help,omitempty"`
+	URL                     string                   `json:"url"`
+	AppLabelKey             string                   `json:"appLabelKey"`
+	ControllerNamespace     string                   `json:"controllerNamespace"`
+	ExecEnabled             *bool                    `json:"execEnabled,omitempty"`
+	ConfigManagementPlugins []ConfigManagementPlugin `json:"configManagementPlugins,omitempty"`
+	KustomizeOptions        *KustomizeOptions        `json:"kustomizeOptions,omitempty"`
+	StatusBadge             string                   `json:"statusBadge,omitempty"`
+	StatusBadgeRootURL      string                   `json:"statusBadgeRootUrl,omitempty"`
+	UserLoginsDisabled      bool                     `json:"userLoginsDisabled"`
+	PasswordPattern         string                   `json:"passwordPattern,omitempty"`
+	TrackingMethod          string                   `json:"trackingMethod,omitempty"`
+	GoogleAnalytics         *GoogleAnalyticsConfig   `json:"googleAnalytics,omitempty"`
+	Plugins                 []Plugin                 `json:"plugins,omitempty"`
+	Help                    *Help                    `json:"help,omitempty"`
 }
 
 type ConfigManagementPlugin struct {
@@ -36,23 +36,23 @@ type Command struct {
 }
 
 type KustomizeOptions struct {
-	BinaryPath string `json:"binaryPath,omitempty"`
+	BinaryPath   string `json:"binaryPath,omitempty"`
 	BuildOptions string `json:"buildOptions,omitempty"`
 }
 
 type GoogleAnalyticsConfig struct {
-	TrackingID         string `json:"trackingID"`
-	AnonymizeUsers     bool   `json:"anonymizeUsers"`
+	TrackingID     string `json:"trackingID"`
+	AnonymizeUsers bool   `json:"anonymizeUsers"`
 }
 
 type Plugin struct {
-	Name   string   `json:"name"`
-	Client string   `json:"client,omitempty"`
+	Name   string `json:"name"`
+	Client string `json:"client,omitempty"`
 }
 
 type Help struct {
-	ChatText  string `json:"chatText,omitempty"`
-	ChatURL   string `json:"chatUrl,omitempty"`
+	ChatText   string            `json:"chatText,omitempty"`
+	ChatURL    string            `json:"chatUrl,omitempty"`
 	BinaryURLs map[string]string `json:"binaryUrls,omitempty"`
 }
 
@@ -63,7 +63,7 @@ type PluginsModel struct {
 type PluginInfo struct {
 	Name             string   `json:"name"`
 	ShortDescription string   `json:"shortDescription,omitempty"`
-	Description      string    `json:"description,omitempty"`
+	Description      string   `json:"description,omitempty"`
 	Icon             string   `json:"icon,omitempty"`
 	Source           string   `json:"source,omitempty"`
 	Support          []string `json:"support,omitempty"`

@@ -28,19 +28,19 @@ type ProjectModel struct {
 }
 
 type ProjectSpec struct {
-	SourceRepos                []string              `json:"sourceRepos,omitempty"`
-	Destinations             []ApplicationDestination `json:"destinations,omitempty"`
-	Description              string                `json:"description,omitempty"`
-	Roles                    []ProjectRole         `json:"roles,omitempty"`
-	ClusterResourceWhitelist []GroupKind           `json:"clusterResourceWhitelist,omitempty"`
-	NamespaceResourceBlacklist []GroupKind         `json:"namespaceResourceBlacklist,omitempty"`
-	OrphanedResources        *OrphanedResourcesMonitorSettings `json:"orphanedResources,omitempty"`
-	SyncWindows              SyncWindows           `json:"syncWindows,omitempty"`
-	SignatureKeys            []SignatureKey        `json:"signatureKeys,omitempty"`
-	ClusterResourceBlacklist []GroupKind           `json:"clusterResourceBlacklist,omitempty"`
-	NamespaceResourceWhitelist []GroupKind         `json:"namespaceResourceWhitelist,omitempty"`
-	SourceNamespaces         []string              `json:"sourceNamespaces,omitempty"`
-	PermitOnlyProjectScopedClusters  bool          `json:"permitOnlyProjectScopedClusters,omitempty"`
+	SourceRepos                     []string                          `json:"sourceRepos,omitempty"`
+	Destinations                    []ApplicationDestination          `json:"destinations,omitempty"`
+	Description                     string                            `json:"description,omitempty"`
+	Roles                           []ProjectRole                     `json:"roles,omitempty"`
+	ClusterResourceWhitelist        []GroupKind                       `json:"clusterResourceWhitelist,omitempty"`
+	NamespaceResourceBlacklist      []GroupKind                       `json:"namespaceResourceBlacklist,omitempty"`
+	OrphanedResources               *OrphanedResourcesMonitorSettings `json:"orphanedResources,omitempty"`
+	SyncWindows                     SyncWindows                       `json:"syncWindows,omitempty"`
+	SignatureKeys                   []SignatureKey                    `json:"signatureKeys,omitempty"`
+	ClusterResourceBlacklist        []GroupKind                       `json:"clusterResourceBlacklist,omitempty"`
+	NamespaceResourceWhitelist      []GroupKind                       `json:"namespaceResourceWhitelist,omitempty"`
+	SourceNamespaces                []string                          `json:"sourceNamespaces,omitempty"`
+	PermitOnlyProjectScopedClusters bool                              `json:"permitOnlyProjectScopedClusters,omitempty"`
 }
 
 type GroupKind struct {
@@ -49,11 +49,11 @@ type GroupKind struct {
 }
 
 type ProjectRole struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description,omitempty"`
-	Policies    []string `json:"policies,omitempty"`
+	Name        string     `json:"name"`
+	Description string     `json:"description,omitempty"`
+	Policies    []string   `json:"policies,omitempty"`
 	JWTTokens   []JWTToken `json:"jwtTokens,omitempty"`
-	Groups      []string `json:"groups,omitempty"`
+	Groups      []string   `json:"groups,omitempty"`
 }
 
 type JWTToken struct {
@@ -63,7 +63,7 @@ type JWTToken struct {
 }
 
 type OrphanedResourcesMonitorSettings struct {
-	Warn   *bool `json:"warn,omitempty"`
+	Warn *bool `json:"warn,omitempty"`
 }
 
 type SignatureKey struct {
@@ -81,9 +81,9 @@ type ProjectList struct {
 
 type ProjectDetailed struct {
 	ProjectModel
-	GlobalProjects []*ProjectModel `json:"globalProjects,omitempty"`
-	Repositories   []*RepositoryModel  `json:"repositories,omitempty"`
-	Clusters       []*ClusterModel     `json:"clusters,omitempty"`
+	GlobalProjects []*ProjectModel    `json:"globalProjects,omitempty"`
+	Repositories   []*RepositoryModel `json:"repositories,omitempty"`
+	Clusters       []*ClusterModel    `json:"clusters,omitempty"`
 }
 
 type ProjectGlobalResponse struct {
